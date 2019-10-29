@@ -4,80 +4,180 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Welcome to Firebase Hosting</title>
-
-  <!-- update the version number as needed -->
-  <script defer src="/__/firebase/7.1.0/firebase-app.js"></script>
-  <!-- include only the Firebase features as you need -->
-  <script defer src="/__/firebase/7.1.0/firebase-auth.js"></script>
-  <script defer src="/__/firebase/7.1.0/firebase-database.js"></script>
-  <script defer src="/__/firebase/7.1.0/firebase-messaging.js"></script>
-  <script defer src="/__/firebase/7.1.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
+  <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
+  <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
+  <!-- <script src="/__/firebase/init.js"></script> -->
+  <!-- <script  src="/__/firebase/7.1.0/firebase-database.js"></script>
+  <script  src="/__/firebase/7.1.0/firebase-messaging.js"></script>
+  <script  src="/__/firebase/7.1.0/firebase-storage.js"></script> -->
   <!-- initialize the SDK after all desired features are loaded -->
-  <script defer src="/__/firebase/init.js"></script>
-
+  <!-- <script  src="/__/firebase/init.js"></script> -->
   <style media="screen">
-  body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-  #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-  #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-  #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-  #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-  #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-  #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-  #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-  @media (max-width: 600px) {
-    body, #message { margin-top: 0; background: white; box-shadow: none; }
-    body { border-top: 16px solid #ffa100; }
-  }
+    body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+    #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+    #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+    #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+    #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+    #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+    #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    @media (max-width: 600px) {
+      body, #message { margin-top: 0; background: white; box-shadow: none; }
+      body { border-top: 16px solid #ffa100; }
+    }
+    button {
+      background-color: #f9ca24; /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
   </style>
 </head>
+
 <body>
   <div id="message">
-    <h2>Welcome</h2>
-    <h1>Firebase Hosting Setup Complete</h1>
-    <a href = "https://drive.google.com/file/d/1o9Cy--ODVdafGyLFjCpwuBa9VNAlZF0M/view">Social theory article</a>
-    <p></p>
-    <a href = "https://www.dhi.ac.uk/san/waysofbeing/data/communities-murphy-preece-2004b.pdf">Social computing article</a>
+    <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
+    <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
+    <hr>
+    <button id="sign-in" onclick="signIn()" hidden>Sign-In</button>
+    <button id="sign-out" onclick="signOut()" hidden>Sign-Out</button>
+    <hr>
+    <h2>App Sketches</h2>
+    <p>Activity Feed</p>
+    <img src="p2_3.png" style="width:700px">
+    <p>Profile and List of Users</p>
+    <img src="ps2_1.png" style="width:700px">
+    <p>Article/Annotation Page</p>
+    <img src="p2_2.png" style="width:700px">
+    <hr>
+    <h2>ER Diagram</h2>
+    <img src="ps2_diagram.png" style="width:700px">
+    <hr>
+    <h1 id="userDivTitle">5 Users Printed Below:</h2>
+    <h5 id="usersDiv"></h5>
+    <hr>
+    <h1 id="blurbDivTitle">Multiple News "Blurbs" Printed Below:</h2>
+    <h5 id="blurbsDiv"></h5>
+    <hr>
+    <h1 id="annotationsDivTitle">5 User-Generated Annotations (Posts) Printed Below:</h2>
+    <h5 id="annotationsDiv"></h5>
+
+    <h1>Project Concept Background</h1>
+    <hr>
     <p>
       Navigating modern day elections to get a balanced view of different topics can be tricky. As articulated in “Bursting Your (Filter) Bubble: Strategies for Promoting Diverse Exposure,” social network sites can often create echo chambers for users, leading them to see content that reinforces their opinions, rather than different opinions to gain a broader perspective. The paper “The top five reasons for lurking: improving community experiences for everyone” explains that sites also have design features that may not promote an encouraging environment for users to interact and engage. With the 2020 presidential election coming up, we designed a whole new social network site that encourages users to view summaries of election topics, read full articles from various conservative and liberal sites, as well as annotate and post fact-based comments. This social network site will provide users with the opportunity to view different news articles from various sites on both sides of the political spectrum, and also include design features that may potentially improve the community experience for all users.
     </p>
+    <h1>References/Links</h1>
+    <hr>
+    <a href = "https://drive.google.com/file/d/1o9Cy--ODVdafGyLFjCpwuBa9VNAlZF0M/view">Social theory article</a>
+    <a href = "https://www.dhi.ac.uk/san/waysofbeing/data/communities-murphy-preece-2004b.pdf">Social computing article</a>
     <a href = "https://github.com/Hlotfy/Electionaries">Open Github repository</a>
-    <p></p>
     <a href = "https://console.firebase.google.com/u/0/project/electionaries/overview">Open Firebase</a>
-    <p></p>
     <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
   </div>
   <p id="load">Firebase SDK Loading&hellip;</p>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-    // // The Firebase SDK is initialized and available here!
-    //
-    // firebase.auth().onAuthStateChanged(user => { });
-    // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-    // firebase.messaging().requestPermission().then(() => { });
-    // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-    //
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    // Config Firebase
+    var firebaseConfig = {
+    apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+    authDomain: "electionaries.firebaseapp.com",
+    databaseURL: "https://electionaries.firebaseio.com",
+    projectId: "electionaries",
+    storageBucket: "electionaries.appspot.com",
+    messagingSenderId: "509982773157",
+    appId: "1:509982773157:web:a775a480db86df3be0224c",
+    measurementId: "G-M6HQRQGYGK"
+    };
+    // Initilaize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    var db = firebase.firestore();
 
-    try {
-      let app = firebase.app();
-      let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-      document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-    } catch (e) {
-      console.error(e);
-      document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+    document.addEventListener('DOMContentLoaded', function() {
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // // The Firebase SDK is initialized and available here!
+      // firebase.auth().onAuthStateChanged(user => { });
+      // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+      // firebase.messaging().requestPermission().then(() => { });
+      // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+        document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+
+    //Sign in and Out
+    function signIn() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider);
+      // console.log("hi");
     }
-  });
+    function signOut() {
+       firebase.auth().signOut();
+    }
+    //Change signin/signout display based on log in state
+    document.addEventListener('DOMContentLoaded', function() {
+      firebase.auth().onAuthStateChanged( function(user){
+          if (user) { // User is signed in!
+          document.getElementById("sign-in").hidden = true;
+          document.getElementById("sign-out").hidden = false;
+        } else { // User is signed out!
+            document.getElementById("sign-in").hidden = false;
+            document.getElementById("sign-out").hidden = true;
+        }
+      });
+    });
+
+    //Print 5 Users
+    var usersDiv = document.getElementById("usersDiv");
+    db.collection("users").doc("dhuang2").onSnapshot(function(doc) {
+        usersDiv.innerHTML = doc.data().firstname + "<br />";
+        // console.log("Current data: ", doc.data().firstname);
+    });
+    db.collection("users").doc("hlotfy").onSnapshot(function(doc) {
+        usersDiv.innerHTML += doc.data().firstname + "<br />";
+    });
+    db.collection("users").doc("jordanblue").onSnapshot(function(doc) {
+        usersDiv.innerHTML += doc.data().firstname + "<br />";
+    });
+    db.collection("users").doc("katiekay1").onSnapshot(function(doc) {
+        usersDiv.innerHTML += doc.data().firstname + "<br />";
+    });
+    db.collection("users").doc("slei").onSnapshot(function(doc) {
+        usersDiv.innerHTML += doc.data().firstname + "<br />";
+    });
+
+    //Print multiple blurbs
+    var blurbsDiv = document.getElementById("blurbsDiv");
+      for (i=1; i < 9; i++) {
+        var num = i.toString();
+        db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
+            blurbsDiv.innerHTML += doc.data().text + "<br /> <br />";
+      });
+    }
+
+    //Print 5 user-generated annotations
+    var annotationsDiv = document.getElementById("annotationsDiv");
+    db.collection("annotations").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        var blurb = doc.data().blurb.toString();
+        annotationsDiv.innerHTML += doc.data().article + " | Article section: " + blurb + " | " + doc.data().author+ ": "+ doc.data().text + "<br /> <br />";
+      })
+    });
+
+
   </script>
-
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="/__/firebase/7.1.0/firebase-app.js"></script>
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-  https://firebase.google.com/docs/web/setup#available-libraries -->
-
-  <!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js"></script>
 </body>
 </html>
