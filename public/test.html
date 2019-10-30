@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+    <title>Firebase example</title>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-database.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.2.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-firestore.js"></script>
+<script>
+  // Your web app's Firebase configuration
+ var firebaseConfig = {
+    apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+    authDomain: "electionaries.firebaseapp.com",
+    databaseURL: "https://electionaries.firebaseio.com",
+    projectId: "electionaries",
+    storageBucket: "electionaries.appspot.com",
+    messagingSenderId: "509982773157",
+    appId: "1:509982773157:web:a775a480db86df3be0224c",
+    measurementId: "G-M6HQRQGYGK"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  var db = firebase.firestore(); //initialize the database
+
+  var data = {
+    article: 'articles/nyt_1',
+    author: 'users/hlotfy',
+    blurb: 'articles/nyt_1/blurbs/5',
+    text: 'I am not sure how I feel about this'
+    };
+
+function writeNewPost(data) {
+  // A post entry.
+//   var postData = {
+//     author: username,
+//     uid: uid,
+//     body: body,
+//     title: title,
+//     starCount: 0,
+//     authorPic: picture
+//   };
+
+  // Get a key for a new Post.
+  var newPostKey = firebase.database().ref().child('annotations').push().key;
+
+  // Write the new post's data simultaneously in the posts list and the user's post list.
+  var updates = {};
+  updates['/annotations/' + newPostKey] = data;
+  updates['/users/hlotfy/annotations/' + newPostKey] = data;
+
+  return firebase.database().ref().update(updates);
+}
+
+function change_title(data){
+    var title = document.getElementById("cat"); //call DOM elements
+    // var dbRef = db.collection("articles").doc("nyt_1").collection("blurbs").doc("5");
+    var dbRef = db.collection("annotations").docs("alkdsfja;ldkfja").set(data);
+    dbRef.update({
+        text: "haha now this is the first blurb!!",
+    });
+    db.collection("articles").doc("nyt_1").collection("blurbs").doc("1").onSnapshot(
+    function(document) {
+    title.innerHTML = document.data().text;
+});
+}
+
+</script>
+  </head>
+  <body>
+    <h1 id="cat">Firebase example 1</h1>
+    <button type=button onclick='writeNewPost(data)'></button>
+    <pre id='data'></pre>
+    <script src="script.js"></script>
+    
+
+  </body>
+</html>

@@ -16,6 +16,10 @@
   <!-- <script  src="/__/firebase/init.js"></script> -->
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
+    #blurb {padding: 5px;}
+    #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
+    #profile {border: solid; border-width: medium; background-color: lightgray;}
     #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
     #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
     #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
@@ -62,8 +66,10 @@
     <h1 id="userDivTitle">5 Users Printed Below:</h2>
     <h5 id="usersDiv"></h5>
     <hr>
+    <div id="article">
     <h1 id="blurbDivTitle">Multiple News "Blurbs" Printed Below:</h2>
     <h5 id="blurbsDiv"></h5>
+    </div>
     <hr>
     <h1 id="annotationsDivTitle">5 User-Generated Annotations (Posts) Printed Below:</h2>
     <h5 id="annotationsDiv"></h5>
@@ -142,31 +148,85 @@
 
     //Print 5 Users
     var usersDiv = document.getElementById("usersDiv");
-    db.collection("users").doc("dhuang2").onSnapshot(function(doc) {
-        usersDiv.innerHTML = doc.data().firstname + "<br />";
-        // console.log("Current data: ", doc.data().firstname);
+
+    db.collection("users").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        usersDiv.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
+      })
     });
-    db.collection("users").doc("hlotfy").onSnapshot(function(doc) {
-        usersDiv.innerHTML += doc.data().firstname + "<br />";
-    });
-    db.collection("users").doc("jordanblue").onSnapshot(function(doc) {
-        usersDiv.innerHTML += doc.data().firstname + "<br />";
-    });
-    db.collection("users").doc("katiekay1").onSnapshot(function(doc) {
-        usersDiv.innerHTML += doc.data().firstname + "<br />";
-    });
-    db.collection("users").doc("slei").onSnapshot(function(doc) {
-        usersDiv.innerHTML += doc.data().firstname + "<br />";
-    });
+
+    // var usersDiv = document.getElementById("usersDiv");
+    // db.collection("users").doc("dhuang2").onSnapshot(function(doc) {
+    //     usersDiv.innerHTML = doc.data().firstname + "<br />";
+    //     // console.log("Current data: ", doc.data().firstname);
+    // });
+    // db.collection("users").doc("hlotfy").onSnapshot(function(doc) {
+    //     usersDiv.innerHTML += doc.data().firstname + "<br />";
+    // });
+    // db.collection("users").doc("jordanblue").onSnapshot(function(doc) {
+    //     usersDiv.innerHTML += doc.data().firstname + "<br />";
+    // });
+    // db.collection("users").doc("katiekay1").onSnapshot(function(doc) {
+    //     usersDiv.innerHTML += doc.data().firstname + "<br />";
+    // });
+    // db.collection("users").doc("slei").onSnapshot(function(doc) {
+    //     usersDiv.innerHTML += doc.data().firstname + "<br />";
+    // });
 
     //Print multiple blurbs
     var blurbsDiv = document.getElementById("blurbsDiv");
-      for (i=1; i < 9; i++) {
-        var num = i.toString();
-        db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
-            blurbsDiv.innerHTML += doc.data().text + "<br /> <br />";
-      });
-    }
+    var article_id = document.getElementById("article");
+    db.collection("articles").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        var art_id = doc.id;
+        var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
+          snapshot.forEach(doc => {
+            console.log(doc.data());
+          })
+        });
+        
+        var art = document.createElement("div");
+        var art_title = document.createElement("h2");
+        var art_text = document.createElement("div");
+        art_title.innerHTML = doc.data().title;
+        art.appendChild(art_title);
+       
+        db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
+
+          snapshot.forEach(doc => {
+            var blurb = document.createElement("div")
+            blurb.setAttribute("id","blurb");
+            blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
+            
+            // for (i=1; i < size; i++) {
+            //   var num = i.toString();
+              // db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
+                // art_text.innerHTML += doc.data().text + "<br /> <br />";
+                db.collection("annotations").where('article','==',art_id).where('blurb','==', parseInt(doc.id)).get().then(snapshot => {
+                  snapshot.forEach(doc => {
+                    console.log(doc.data());
+
+                    var new_note = document.createElement("div")
+                    new_note.setAttribute("id","note");
+                    var txt = document.createElement("h4");
+                    txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
+                    console.log(doc.data().text);
+                    new_note.appendChild(txt);
+                    blurb.appendChild(new_note);
+                  })
+                  })
+                art_text.appendChild(blurb);
+
+          // }
+          })
+          // art_text.innerHTML += "<hr> <hr>";
+        })
+        art.appendChild(art_text);
+        blurbsDiv.appendChild(art);
+        // blurbsDiv.appendChild(document.createElement("<hr>"));
+    })
+   
+  });
 
     //Print 5 user-generated annotations
     var annotationsDiv = document.getElementById("annotationsDiv");
