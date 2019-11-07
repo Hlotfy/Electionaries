@@ -49,6 +49,9 @@
     <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
     <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
     <hr>
+    <div id="userNameDisplay">
+      <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
+    </div>
     <button id="sign-in" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" onclick="signOut()" >Sign-Out</button>
     <hr>
@@ -133,15 +136,30 @@
     function signOut() {
        firebase.auth().signOut();
     }
+
     //Change signin/signout display based on log in state
     document.addEventListener('DOMContentLoaded', function() {
       firebase.auth().onAuthStateChanged( function(user){
         if (user) { // User is signed in!
             document.getElementById("sign-in").style.display = "none";
             document.getElementById("sign-out").style.display = "block";
+            console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
+
+            document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
+
+            // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
+            // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
+
+
+            var userImg = document.createElement('img');
+            console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
+            userImg.src = firebase.auth().currentUser.photoURL;
+            document.getElementById("userNameDisplay").appendChild(userImg);
+            console.log("img appended");
         } else { // User is signed out!
             document.getElementById("sign-in").style.display = "block";
             document.getElementById("sign-out").style.display = "none";
+            document.getElementById("userNameDisplay").innerHTML = "";
         }
       });
     });
@@ -184,20 +202,20 @@
             console.log(doc.data());
           })
         });
-        
+
         var art = document.createElement("div");
         var art_title = document.createElement("h2");
         var art_text = document.createElement("div");
         art_title.innerHTML = doc.data().title;
         art.appendChild(art_title);
-       
+
         db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
 
           snapshot.forEach(doc => {
             var blurb = document.createElement("div")
             blurb.setAttribute("id","blurb");
             blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
-            
+
             // for (i=1; i < size; i++) {
             //   var num = i.toString();
               // db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
@@ -225,7 +243,7 @@
         blurbsDiv.appendChild(art);
         // blurbsDiv.appendChild(document.createElement("<hr>"));
     })
-   
+
   });
 
     //Print 5 user-generated annotations
