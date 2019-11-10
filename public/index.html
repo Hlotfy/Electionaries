@@ -177,7 +177,7 @@
         var profile_block = document.createElement("div");
         profile_block.setAttribute("id","profile");
         profile_block.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
-        
+
         var profile_conn = document.createElement("div");
         profile_conn.setAttribute("id","connections");
 
@@ -186,7 +186,7 @@
         var title = document.createElement("h2");
         title.innerHTML = "Following";
         following.appendChild(title);
-        
+
 
         db.collection("following").doc(doc.id).get().then(function(doc) {
           if (doc.exists) {
@@ -194,10 +194,10 @@
               console.log(field);
               following.innerHTML += field + "<br />";
             }
-            
-          }            
+
+          }
         })
-        
+
         profile_conn.appendChild(following);
         var followers = document.createElement("div");
         followers.setAttribute("id","conn_list");
@@ -212,11 +212,11 @@
               console.log(field);
               followers.innerHTML += field + "<br />";
             }
-            
+
           }
         })
-        
-            
+
+
         profile_conn.appendChild(followers);
         var profile_bod = document.createElement("div");
         profile_bod.setAttribute("id","profile_body");
