@@ -48,25 +48,45 @@
   <!--PROFILE PAGE HERE. -->
 
   <div id="people-card">
+      <div id="propic"></div>
       <br>
         Name: <span id="name"></span>
       <p>
-        City:  <span id="city"></span>
+        Civility Score:  <span id="civ_score"></span>
+
   </div>
 
   <!-- JAVASCRIPT TO ALLOW UPDATING A GIVEN UERS'S PROFILE PAGE HERE. -->
 
   <script>
+
+  // Initilaize Firebase
+
     document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(authStateObserver);
-        var vals = window.location.search.split("="); //This line is the one that allows you to know
-        //which user’s profile you should retrieve from Firestore.
-        //Since we created custom URLs based on the users id, this id can then be retrieved through parsing
-        //the URL. The id is contained at vals[1]
+      var firebaseConfig = {
+        apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+        authDomain: "electionaries.firebaseapp.com",
+        databaseURL: "https://electionaries.firebaseio.com",
+        projectId: "electionaries",
+        storageBucket: "electionaries.appspot.com",
+        messagingSenderId: "509982773157",
+        appId: "1:509982773157:web:a775a480db86df3be0224c",
+        measurementId: "G-M6HQRQGYGK"
+      };
+      //firebase.auth().onAuthStateChanged(authStateObserver);
+      console.log("hi, we got to profile page; getting the profile of user: " + window.location.search.split("=")[1]);
+        var user_id = window.location.search.split("=")[1];
+      //  console.log("user_id is: " + user_id);
+        firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
-        db.collection("users").doc(vals[1]).onSnapshot(function (doc) {
-             document.getElementById("name").innerHTML = doc.data().name;
-             document.getElementById("city").innerHTML = doc.data().city;
+        db.collection("users").doc(user_id).onSnapshot(function (doc) {
+              var profile_img = document.createElement('img');
+              profile_img.src = doc.data().propic;
+              profile_img.setAttribute("width", "100");
+              profile_img.setAttribute("height", "100");
+              propic.appendChild(profile_img);
+             document.getElementById("name").innerHTML = doc.data().fullName;
+             document.getElementById("civ_score").innerHTML = doc.data().civ_score;
          });
 
      try {

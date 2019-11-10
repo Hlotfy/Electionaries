@@ -13,7 +13,8 @@ admin.initializeApp();
 // Add a user to Firestore database:
 exports.setupUsers = functions.auth.user().onCreate(async (user) => {
   var fullName = user.displayName || 'Anonymous';
-  await admin.firestore().collection('users').doc((user.email).split("@")[0]).set({
+  await admin.firestore().collection('users').doc(user.uid).set({//changing back to access profile link easily
+  //await admin.firestore().collection('users').doc((user.email).split("@")[0]).set({
     fullName: fullName,
     username: (user.email).split("@")[0],
     email: user.email,
@@ -22,4 +23,3 @@ exports.setupUsers = functions.auth.user().onCreate(async (user) => {
     id: user.uid
   });
 });
-

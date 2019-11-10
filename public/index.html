@@ -56,6 +56,7 @@
     <div id="userNameDisplay">
       <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
     </div>
+    <div id="allProfilesDiv"></div>
     <button id="sign-in" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" onclick="signOut()" >Sign-Out</button>
     <hr>
@@ -70,7 +71,7 @@
     <h2>ER Diagram</h2>
     <img src="ps2_diagram.png" style="width:700px">
     <hr>
-    <h1 id="userDivTitle">5 Users Printed Below:</h2>
+    <h1 id="userDivTitle">All Users</h2>
     <h5 id="usersDiv"></h5>
     <hr>
     <div id="article">
@@ -169,66 +170,79 @@
       });
     });
 
-    //Print 5 Users
+    // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
 
     db.collection("users").get().then(snapshot => {
       snapshot.forEach(doc => {
+        // console.log("current user is : " + doc.data().fullName + " (@" +doc.id+ ")");
         var profile_block = document.createElement("div");
         profile_block.setAttribute("id","profile");
-        profile_block.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
-
-        var profile_conn = document.createElement("div");
-        profile_conn.setAttribute("id","connections");
-
-        var following = document.createElement("div");
-        following.setAttribute("id","conn_list");
-        var title = document.createElement("h2");
-        title.innerHTML = "Following";
-        following.appendChild(title);
-
-
-        db.collection("following").doc(doc.id).get().then(function(doc) {
-          if (doc.exists) {
-            for (field in doc.data()) {
-              console.log(field);
-              following.innerHTML += field + "<br />";
-            }
-
-          }
-        })
-
-        profile_conn.appendChild(following);
-        var followers = document.createElement("div");
-        followers.setAttribute("id","conn_list");
-
-        var title = document.createElement("h2");
-        title.innerHTML = "Followers";
-        followers.appendChild(title);
-
-        db.collection("followers").doc(doc.id).get().then(function(doc) {
-          if (doc.exists) {
-            for (field in doc.data()) {
-              console.log(field);
-              followers.innerHTML += field + "<br />";
-            }
-
-          }
-        })
+        var profile_img = document.createElement('img');
+        profile_img.src = doc.data().propic;
+        profile_img.setAttribute("width", "50");
+        profile_img.setAttribute("height", "50");
+        profile_block.appendChild(profile_img);
+        profile_block.innerHTML += doc.data().fullName + " (@" +doc.id+ ") <br />";
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Go to profile");
+        a.appendChild(linkText);
+      //  a.title = doc.data().fullName;
+        a.href = "profile.html?id="+doc.data().id;
+        profile_block.appendChild(a);
 
 
-        profile_conn.appendChild(followers);
-        var profile_bod = document.createElement("div");
-        profile_bod.setAttribute("id","profile_body");
+        // var profile_conn = document.createElement("div");
+        // profile_conn.setAttribute("id","connections");
+        //
+        // var following = document.createElement("div");
+        // following.setAttribute("id","conn_list");
+        // var title = document.createElement("h2");
+        // title.innerHTML = "Following";
+        // following.appendChild(title);
 
-        profile_bod.appendChild(profile_conn);
-        profile_block.appendChild(profile_bod);
 
+        // db.collection("following").doc(doc.id).get().then(function(doc) {
+        //   if (doc.exists) {
+        //     for (field in doc.data()) {
+        //       console.log(field);
+        //       following.innerHTML += field + "<br />";
+        //     }
+        //
+        //   }
+        // })
+        //
+        // profile_conn.appendChild(following);
+        // var followers = document.createElement("div");
+        // followers.setAttribute("id","conn_list");
+        //
+        // var title = document.createElement("h2");
+        // title.innerHTML = "Followers";
+        // followers.appendChild(title);
+
+        // db.collection("followers").doc(doc.id).get().then(function(doc) {
+        //   if (doc.exists) {
+        //     for (field in doc.data()) {
+        //       console.log(field);
+        //       followers.innerHTML += field + "<br />";
+        //     }
+        //
+        //   }
+        // })
+
+
+        // profile_conn.appendChild(followers);
+        // var profile_bod = document.createElement("div");
+        // profile_bod.setAttribute("id","profile_body");
+        //
+        // profile_bod.appendChild(profile_conn);
+        // profile_block.appendChild(profile_bod);
+        //
 
         usersDiv.appendChild(profile_block);
       })
     });
-
+    //
     // var usersDiv = document.getElementById("usersDiv");
     // db.collection("users").doc("dhuang2").onSnapshot(function(doc) {
     //     usersDiv.innerHTML = doc.data().firstname + "<br />";
