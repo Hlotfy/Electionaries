@@ -150,10 +150,11 @@
             // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
             // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
 
-
             var userImg = document.createElement('img');
             console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
             userImg.src = firebase.auth().currentUser.photoURL;
+            userImg.setAttribute("width", "50");
+            userImg.setAttribute("height", "50");
             document.getElementById("userNameDisplay").appendChild(userImg);
             console.log("img appended");
         } else { // User is signed out!
