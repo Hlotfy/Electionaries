@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+  <title>Electionaries: A More Civil Social Network for Thoughtful Political Discussion!</title>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
@@ -31,6 +31,7 @@
     #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
     #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
@@ -60,6 +61,16 @@
     <button id="sign-in" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" onclick="signOut()" >Sign-Out</button>
     <hr>
+    <h1 id="userDivTitle">All our Current Users!!</h2>
+    <h5 id="usersDiv"></h5>
+    <hr>
+    <h1 id="feedDivTitle">All Current Content!!</h2>
+      <div id="feedDiv">
+          Make a Post: What current event is on your mind?<br>
+          <input type="text" id="annotationInput">
+          <button id="post-btn" onclick="publishPost()">Post</button>
+      </div>
+    <hr>
     <h2>App Sketches</h2>
     <p>Activity Feed</p>
     <img src="p2_3.png" style="width:700px">
@@ -70,9 +81,6 @@
     <hr>
     <h2>ER Diagram</h2>
     <img src="ps2_diagram.png" style="width:700px">
-    <hr>
-    <h1 id="userDivTitle">All Users</h2>
-    <h5 id="usersDiv"></h5>
     <hr>
     <div id="article">
     <h1 id="blurbDivTitle">Multiple News "Blurbs" Printed Below:</h2>
@@ -141,6 +149,42 @@
     function signOut() {
        firebase.auth().signOut();
     }
+    function publishPost() { //BUG: fix, to Only enable this function when a user is logged in
+      var postText = document.getElementById("annotationInput").value;
+      var d = document.createElement('div');
+      d.setAttribute("id", "singlePostDiv");
+
+      var currentDate = new Date();
+
+      var newPostObject = {
+        article:"test_article",
+        author:firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        blurb: 0,
+        civ_score: 5,
+        created: currentDate, //Date.now(),
+        text: postText
+      };
+
+      d.appendChild(document.createTextNode(newPostObject["author"] + "\n"));
+      d.appendChild(document.createTextNode("Civility Score:" + newPostObject["civ_score"] + "\n"));
+      d.appendChild(document.createTextNode("Created At: " + newPostObject["created"] + "\n"));
+      d.appendChild(document.createTextNode("Post: " + newPostObject["text"] + "\n"));
+      //document.getElementById("feedDiv").innerHTML += "<br>" + postText;
+      //console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
+
+      //document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
+
+      db.collection("annotations").doc("new").set(newPostObject)
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+
+      document.getElementById("feedDiv").appendChild(d);
+
+    }
 
     //Change signin/signout display based on log in state
     document.addEventListener('DOMContentLoaded', function() {
@@ -170,6 +214,28 @@
       });
     });
 
+    //Enable posting content
+    var feedDiv = document.getElementById("feedDiv");
+    // console.log("Div is here, input is " + document.getElementById("annotationInput").value);
+    db.collection("annotations").doc("new").set({
+
+      article:"nyt_1",
+      author:"", //document.getElementById("authorInput").value,
+      blurb: 3,
+      civ_score: 5,
+      created: "October 20, 2019 at 12:00:00 AM UTC-4",
+      text: ""//document.getElementById("annotationInput").value//get message from input
+
+    })
+    .then(function() {
+        console.log("Document successfully written!");
+    })
+    .catch(function(error) {
+        console.error("Error writing document: ", error);
+    });
+
+
+
     // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
 
@@ -183,7 +249,7 @@
         profile_img.setAttribute("width", "50");
         profile_img.setAttribute("height", "50");
         profile_block.appendChild(profile_img);
-        profile_block.innerHTML += doc.data().fullName + " (@" +doc.id+ ") <br />";
+        profile_block.innerHTML += doc.data().fullName + " (@" +doc.data().email.split("@")[0]+ ") <br />";
         var a = document.createElement('a');
         var linkText = document.createTextNode("Go to profile");
         a.appendChild(linkText);
@@ -317,13 +383,13 @@
   });
 
     //Print 5 user-generated annotations
-    var annotationsDiv = document.getElementById("annotationsDiv");
-    db.collection("annotations").get().then(snapshot => {
-      snapshot.forEach(doc => {
-        var blurb = doc.data().blurb.toString();
-        annotationsDiv.innerHTML += doc.data().article + " | Article section: " + blurb + " | " + doc.data().author+ ": "+ doc.data().text + "<br /> <br />";
-      })
-    });
+    // var annotationsDiv = document.getElementById("annotationsDiv");
+    // db.collection("annotations").get().then(snapshot => {
+    //   snapshot.forEach(doc => {
+    //     var blurb = doc.data().blurb.toString();
+    //     annotationsDiv.innerHTML += doc.data().article + " | Article section: " + blurb + " | " + doc.data().author+ ": "+ doc.data().text + "<br /> <br />";
+    //   })
+    // });
 
 
   </script>
