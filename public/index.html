@@ -19,7 +19,11 @@
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
-    #profile {border: solid; border-width: medium; background-color: lightgray;}
+    #profile {background-color: rgb(226, 226, 226); width: 40%; padding: 5px; margin: 10px;}
+    #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
+    #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
+    #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
+    #conn_list h2 { color:violet; font-weight: bold; }
     #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
     #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
     #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
@@ -170,7 +174,58 @@
 
     db.collection("users").get().then(snapshot => {
       snapshot.forEach(doc => {
-        usersDiv.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
+        var profile_block = document.createElement("div");
+        profile_block.setAttribute("id","profile");
+        profile_block.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
+        
+        var profile_conn = document.createElement("div");
+        profile_conn.setAttribute("id","connections");
+
+        var following = document.createElement("div");
+        following.setAttribute("id","conn_list");
+        var title = document.createElement("h2");
+        title.innerHTML = "Following";
+        following.appendChild(title);
+        
+
+        db.collection("following").doc(doc.id).get().then(function(doc) {
+          if (doc.exists) {
+            for (field in doc.data()) {
+              console.log(field);
+              following.innerHTML += field + "<br />";
+            }
+            
+          }            
+        })
+        
+        profile_conn.appendChild(following);
+        var followers = document.createElement("div");
+        followers.setAttribute("id","conn_list");
+
+        var title = document.createElement("h2");
+        title.innerHTML = "Followers";
+        followers.appendChild(title);
+
+        db.collection("followers").doc(doc.id).get().then(function(doc) {
+          if (doc.exists) {
+            for (field in doc.data()) {
+              console.log(field);
+              followers.innerHTML += field + "<br />";
+            }
+            
+          }
+        })
+        
+            
+        profile_conn.appendChild(followers);
+        var profile_bod = document.createElement("div");
+        profile_bod.setAttribute("id","profile_body");
+
+        profile_bod.appendChild(profile_conn);
+        profile_block.appendChild(profile_bod);
+
+
+        usersDiv.appendChild(profile_block);
       })
     });
 
