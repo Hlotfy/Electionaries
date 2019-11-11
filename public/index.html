@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
   <title>Electionaries: A More Civil Social Network for Thoughtful Political Discussion!</title>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
@@ -19,7 +22,10 @@
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
-    #profile {background-color: rgb(226, 226, 226); width: 40%; padding: 5px; margin: 10px;}
+    #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
+    #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
+    #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
+    #currentPost {background-color: #ffcccc; width: 80%; padding: 5px; margin: 3px;}
     #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
     #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
     #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
@@ -58,18 +64,28 @@
       <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
     </div>
     <div id="allProfilesDiv"></div>
-    <button id="sign-in" onclick="signIn()" >Sign-In</button>
-    <button id="sign-out" onclick="signOut()" >Sign-Out</button>
+    <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
     <hr>
     <h1 id="userDivTitle">All our Current Users!!</h2>
     <h5 id="usersDiv"></h5>
     <hr>
-    <h1 id="feedDivTitle">All Current Content!!</h2>
-      <div id="feedDiv">
-          Make a Post: What current event is on your mind?<br>
-          <input type="text" id="annotationInput">
-          <button id="post-btn" onclick="publishPost()">Post</button>
+    <h1 id="feedDivTitle">All Current User Posts!! (Activity Feed)</h2>
+    <div id="activityFeed">
+      <div id="composeDiv">
+        <h5>Make a Post to Activity Feed Below</h5>
+        What article is on your mind?<br>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Article link" aria-label="Article link" aria-describedby="button-addon2">
+          <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation" aria-label="Your annotation" aria-describedby="button-addon2">
+          <div class="input-group-append">
+            <button id="post-btn" onclick="publishPostToDB()" class="btn btn-primary" type="button" id="button-addon2">Post!</button>
+          </div>
+        </div>
       </div>
+      <div id="tempFeedDiv"></div>
+      <div id="feedDiv"></div>
+    </div>
     <hr>
     <h2>App Sketches</h2>
     <p>Activity Feed</p>
@@ -149,13 +165,11 @@
     function signOut() {
        firebase.auth().signOut();
     }
-    function publishPost() { //BUG: fix, to Only enable this function when a user is logged in
+    function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
-      d.setAttribute("id", "singlePostDiv");
-
+      d.setAttribute("id", "currentPost");
       var currentDate = new Date();
-
       var newPostObject = {
         article:"test_article",
         author:firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
@@ -164,26 +178,22 @@
         created: currentDate, //Date.now(),
         text: postText
       };
-
-      d.appendChild(document.createTextNode(newPostObject["author"] + "\n"));
-      d.appendChild(document.createTextNode("Civility Score:" + newPostObject["civ_score"] + "\n"));
-      d.appendChild(document.createTextNode("Created At: " + newPostObject["created"] + "\n"));
-      d.appendChild(document.createTextNode("Post: " + newPostObject["text"] + "\n"));
-      //document.getElementById("feedDiv").innerHTML += "<br>" + postText;
-      //console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
-
-      //document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
-
-      db.collection("annotations").doc("new").set(newPostObject)
+      //Display on front end temporarily (since firebase doesnt update front end view in real time :( )
+      d.innerHTML =
+        ('"' + postText + '" <br /><br />By: @' + JSON.stringify(newPostObject["author"])
+        + " <br /> Civility Score: " + JSON.stringify(newPostObject["civ_score"])
+        + " <br /> Created at: "+ JSON.stringify(newPostObject["created"])
+        + " <br /> Link to article: "  + JSON.stringify(newPostObject["article"]) + "<br />" + d.innerHTML);
+      //Add to database; upon refresh, this new entry will displayed through pull from DB function directly
+      var newAnnotationId = firebase.auth().currentUser.displayName.split(' ')[0]+"-"+Math.random().toString(36).substring(2, 10);
+      db.collection("annotations").doc(newAnnotationId).set(newPostObject)
       .then(function() {
           console.log("Document successfully written!");
       })
       .catch(function(error) {
           console.error("Error writing document: ", error);
       });
-
-      document.getElementById("feedDiv").appendChild(d);
-
+      document.getElementById("tempFeedDiv").appendChild(d);
     }
 
     //Change signin/signout display based on log in state
@@ -213,28 +223,6 @@
         }
       });
     });
-
-    //Enable posting content
-    var feedDiv = document.getElementById("feedDiv");
-    // console.log("Div is here, input is " + document.getElementById("annotationInput").value);
-    db.collection("annotations").doc("new").set({
-
-      article:"nyt_1",
-      author:"", //document.getElementById("authorInput").value,
-      blurb: 3,
-      civ_score: 5,
-      created: "October 20, 2019 at 12:00:00 AM UTC-4",
-      text: ""//document.getElementById("annotationInput").value//get message from input
-
-    })
-    .then(function() {
-        console.log("Document successfully written!");
-    })
-    .catch(function(error) {
-        console.error("Error writing document: ", error);
-    });
-
-
 
     // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
@@ -306,6 +294,20 @@
         //
 
         usersDiv.appendChild(profile_block);
+      })
+    });
+    // Display all POSTS from database
+    var activityFeed = document.getElementById("feedDiv");
+    db.collection("annotations").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        var feed_block = document.createElement("div");
+        feed_block.setAttribute("id","feed");
+        feed_block.innerHTML += '"' + doc.data().text
+          + '" <br /><br />By: @' +doc.data().author
+          + "<br /> Civility Score: " + doc.data().civ_score
+          + " <br />Created at: "+ doc.data().created
+          + " <br />Link to article: " + doc.data().article + " <br />";
+        activityFeed.appendChild(feed_block);
       })
     });
     //
@@ -393,5 +395,9 @@
 
 
   </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </body>
 </html>
