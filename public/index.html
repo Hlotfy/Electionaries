@@ -87,6 +87,9 @@
       <div id="feedDiv"></div>
     </div>
     <hr>
+    <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
+    <div id="newsArticlesDiv"></div>
+    <hr>
     <h2>App Sketches</h2>
     <p>Activity Feed</p>
     <img src="p2_3.png" style="width:700px">
@@ -184,7 +187,7 @@
         + " <br /> Civility Score: " + JSON.stringify(newPostObject["civ_score"])
         + " <br /> Created at: "+ JSON.stringify(newPostObject["created"])
         + " <br /> Link to article: "  + JSON.stringify(newPostObject["article"]) + "<br />" + d.innerHTML);
-      //Add to database; upon refresh, this new entry will displayed through pull from DB function directly
+      //Add annotation post to database; upon refresh, this new entry will displayed through pull from DB function directly
       var newAnnotationId = firebase.auth().currentUser.displayName.split(' ')[0]+"-"+Math.random().toString(36).substring(2, 10);
       db.collection("annotations").doc(newAnnotationId).set(newPostObject)
       .then(function() {
@@ -310,6 +313,35 @@
         activityFeed.appendChild(feed_block);
       })
     });
+
+
+    //Display news articles using news API
+    var currentNews = document.getElementById("newsArticlesDiv");
+    var url = 'https://newsapi.org/v2/top-headlines?' +
+          'country=us&' +
+          'apiKey=392b559ff861492d9f42692a556f6792';
+    var req = new Request(url);
+    fetch(req)
+    .then(response =>{
+      console.log(response.json()); //json of all articles -- works
+
+      //Populate this on the page:
+      //-- BUG something with promises or using the Response twice is causing this to
+      // not work even though we're successfully getting the response from the API - see console log - fix
+
+      // var clone = response.clone();
+      // clone.blob().then(function(myBlob) {
+      //   var newsJson = JSON.stringify(myBlob);
+      //   console.log("newsjson ----- is ----:" + newsJson);
+      // });
+
+      // var newsJson = JSON.stringify(clone.json());
+      // console.log("newsjson ----- is ----:" + newsJson);
+      // var allNewsArticlesFromApi = document.createElement('div');
+      // allNewsArticlesFromApi.appendChild(newsJson);
+      // currentNews.appendChild("allNewsArticlesFromApi");
+    });
+
     //
     // var usersDiv = document.getElementById("usersDiv");
     // db.collection("users").doc("dhuang2").onSnapshot(function(doc) {

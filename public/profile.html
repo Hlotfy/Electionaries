@@ -48,12 +48,19 @@
   <!--PROFILE PAGE HERE. -->
 
   <div id="people-card">
+      <h2>My Profile</h2>
       <div id="propic"></div>
       <br>
         Name: <span id="name"></span>
       <p>
         Civility Score:  <span id="civ_score"></span>
-
+      <hr>
+      <h2>Users I Follow</h2>
+      <!-- insert following/follow lists here -->
+      <hr>
+  </div>
+  <h2>All Annotations I've Made</h2>
+  <div id="allUserAnnotations">
   </div>
 
   <!-- JAVASCRIPT TO ALLOW UPDATING A GIVEN UERS'S PROFILE PAGE HERE. -->
@@ -76,6 +83,7 @@
       //firebase.auth().onAuthStateChanged(authStateObserver);
       console.log("hi, we got to profile page; getting the profile of user: " + window.location.search.split("=")[1]);
         var user_id = window.location.search.split("=")[1];
+        // var user_full_name = db.collection("users").where ("id", "==", user_id);
       //  console.log("user_id is: " + user_id);
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
@@ -89,6 +97,40 @@
              document.getElementById("civ_score").innerHTML = doc.data().civ_score;
          });
 
+         var myAnnotationsDiv = document.getElementById("allUserAnnotations");
+
+         //trying to get the user's Full Name to input into next function
+         // db.collection("users").where ("id", "==", user_id)
+         // .get()
+         // .then(function(querySnapshot) {
+         //     querySnapshot.forEach(function(doc) {
+         //         var userFullName = doc.data().fullName;
+         //     });
+         // });
+
+         //Get all annotations of a given author Full Name
+         db.collection("annotations").where ("author", "==", "Shirley Lei") //where author is the owner of the current profile  - TODO get the actual author
+          .get()
+          .then(function(querySnapshot) {
+              querySnapshot.forEach(function(doc) {
+                  // doc.data() is never undefined for query doc snapshots
+                  console.log("getting annotations db ");
+                  console.log(doc.id, " => ", doc.data());
+                  var br = document.createElement("br");
+                  myAnnotationsDiv.appendChild(document.createTextNode(doc.data().text));
+                  myAnnotationsDiv.appendChild(br);
+                  myAnnotationsDiv.appendChild(br);
+                  myAnnotationsDiv.appendChild("Created at: " + document.createTextNode(doc.data().created));
+                  myAnnotationsDiv.appendChild(br);
+                  myAnnotationsDiv.appendChild(br);
+                  myAnnotationsDiv.appendChild(br);
+                  myAnnotationsDiv.appendChild(br);
+              });
+          })
+          .catch(function(error) {
+              console.log("Error getting documents: ", error);
+          });
+
      try {
        	let app = firebase.app()
     let features = ['auth', 'database', 'messaging', 'storage'] .filter(feature => typeof app[feature] === 'function');
@@ -96,6 +138,8 @@
          console.error(e);
      }
     });
+
+
   </script>
 
 </body>
