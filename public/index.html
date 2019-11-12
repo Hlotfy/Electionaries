@@ -53,6 +53,10 @@
     <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
     <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
     <hr>
+    <div id="logged-in-user">
+      
+    </div>
+    <hr>
     <button id="sign-in" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" onclick="signOut()" >Sign-Out</button>
     <hr>
@@ -137,6 +141,10 @@
     function signOut() {
        firebase.auth().signOut();
     }
+
+    // var userDisplayDiv = document.getElementById("logged-in-user");
+    // console.log(firebase.auth().currentUser.displayName);
+    // userDisplayDiv.innerHTML = firebase.auth().currentUser.displayName; // + firebase.auth().currentUser.photoURL); 
     //Change signin/signout display based on log in state
     document.addEventListener('DOMContentLoaded', function() {
       firebase.auth().onAuthStateChanged( function(user){
