@@ -3,11 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Electionaries: A More Civil Social Network for Thoughtful Political Discussion!</title>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
+  <!-- <script  src="/Users/halalotfy/Downloads/request-master/request.js"></script> -->
+  
   <!-- <script src="/__/firebase/init.js"></script> -->
   <!-- <script  src="/__/firebase/7.1.0/firebase-database.js"></script>
   <script  src="/__/firebase/7.1.0/firebase-messaging.js"></script>
@@ -19,7 +24,10 @@
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
-    #profile {background-color: rgb(226, 226, 226); width: 40%; padding: 5px; margin: 10px;}
+    #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
+    #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
+    #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
+    #currentPost {background-color: #ffcccc; width: 80%; padding: 5px; margin: 3px;}
     #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
     #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
     #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
@@ -31,6 +39,7 @@
     #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
     #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
@@ -53,12 +62,44 @@
     <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
     <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
     <hr>
+<<<<<<< HEAD
     <div id="logged-in-user">
       
     </div>
     <hr>
     <button id="sign-in" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" onclick="signOut()" >Sign-Out</button>
+=======
+    <div id="userNameDisplay">
+      <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
+    </div>
+    <div id="allProfilesDiv"></div>
+    <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
+    <hr>
+    <h1 id="userDivTitle">All our Current Users!!</h2>
+    <h5 id="usersDiv"></h5>
+    <hr>
+    <h1 id="feedDivTitle">All Current User Posts!! (Activity Feed)</h2>
+    <div id="activityFeed">
+      <div id="composeDiv">
+        <h5>Make a Post to Activity Feed Below</h5>
+        What article is on your mind?<br>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Article link" aria-label="Article link" aria-describedby="button-addon2">
+          <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation" aria-label="Your annotation" aria-describedby="button-addon2">
+          <div class="input-group-append">
+            <button id="post-btn" onclick="publishPostToDB()" class="btn btn-primary" type="button" id="button-addon2">Post!</button>
+          </div>
+        </div>
+      </div>
+      <div id="tempFeedDiv"></div>
+      <div id="feedDiv"></div>
+    </div>
+    <hr>
+    <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
+    <div id="newsArticlesDiv">It shoud be here!</div>
+>>>>>>> c7446c778b2828917046cdada3a7b52edac75b1f
     <hr>
     <h2>App Sketches</h2>
     <p>Activity Feed</p>
@@ -70,9 +111,6 @@
     <hr>
     <h2>ER Diagram</h2>
     <img src="ps2_diagram.png" style="width:700px">
-    <hr>
-    <h1 id="userDivTitle">5 Users Printed Below:</h2>
-    <h5 id="usersDiv"></h5>
     <hr>
     <div id="article">
     <h1 id="blurbDivTitle">Multiple News "Blurbs" Printed Below:</h2>
@@ -141,83 +179,322 @@
     function signOut() {
        firebase.auth().signOut();
     }
+<<<<<<< HEAD
 
     // var userDisplayDiv = document.getElementById("logged-in-user");
     // console.log(firebase.auth().currentUser.displayName);
     // userDisplayDiv.innerHTML = firebase.auth().currentUser.displayName; // + firebase.auth().currentUser.photoURL); 
+=======
+    function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
+      var postText = document.getElementById("annotationInput").value;
+      var d = document.createElement('div');
+      d.setAttribute("id", "currentPost");
+      var currentDate = new Date();
+      var newPostObject = {
+        article:"test_article",
+        author:firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        blurb: 0,
+        civ_score: 5,
+        created: currentDate, //Date.now(),
+        text: postText
+      };
+      //Display on front end temporarily (since firebase doesnt update front end view in real time :( )
+      d.innerHTML =
+        ('"' + postText + '" <br /><br />By: @' + JSON.stringify(newPostObject["author"])
+        + " <br /> Civility Score: " + JSON.stringify(newPostObject["civ_score"])
+        + " <br /> Created at: "+ JSON.stringify(newPostObject["created"])
+        + " <br /> Link to article: "  + JSON.stringify(newPostObject["article"]) + "<br />" + d.innerHTML);
+      //Add annotation post to database; upon refresh, this new entry will displayed through pull from DB function directly
+      var newAnnotationId = firebase.auth().currentUser.displayName.split(' ')[0]+"-"+Math.random().toString(36).substring(2, 10);
+      db.collection("annotations").doc(newAnnotationId).set(newPostObject)
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+      document.getElementById("tempFeedDiv").appendChild(d);
+    }
+
+>>>>>>> c7446c778b2828917046cdada3a7b52edac75b1f
     //Change signin/signout display based on log in state
     document.addEventListener('DOMContentLoaded', function() {
       firebase.auth().onAuthStateChanged( function(user){
         if (user) { // User is signed in!
             document.getElementById("sign-in").style.display = "none";
             document.getElementById("sign-out").style.display = "block";
+            console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
+
+            document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
+
+            // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
+            // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
+
+            var userImg = document.createElement('img');
+            console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
+            userImg.src = firebase.auth().currentUser.photoURL;
+            userImg.setAttribute("width", "50");
+            userImg.setAttribute("height", "50");
+            document.getElementById("userNameDisplay").appendChild(userImg);
+            console.log("img appended");
         } else { // User is signed out!
             document.getElementById("sign-in").style.display = "block";
             document.getElementById("sign-out").style.display = "none";
+            document.getElementById("userNameDisplay").innerHTML = "";
         }
       });
     });
 
-    //Print 5 Users
+    // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
 
     db.collection("users").get().then(snapshot => {
       snapshot.forEach(doc => {
+        // console.log("current user is : " + doc.data().fullName + " (@" +doc.id+ ")");
         var profile_block = document.createElement("div");
         profile_block.setAttribute("id","profile");
-        profile_block.innerHTML += doc.data().firstname + " "+ doc.data().lastname + " (" +doc.id+ ") <br />";
-        
-        var profile_conn = document.createElement("div");
-        profile_conn.setAttribute("id","connections");
+        var profile_img = document.createElement('img');
+        profile_img.src = doc.data().propic;
+        profile_img.setAttribute("width", "50");
+        profile_img.setAttribute("height", "50");
+        profile_block.appendChild(profile_img);
+        profile_block.innerHTML += doc.data().fullName + " (@" +doc.data().email.split("@")[0]+ ") <br />";
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Go to profile");
+        a.appendChild(linkText);
+      //  a.title = doc.data().fullName;
+        a.href = "profile.html?id="+doc.data().id;
+        profile_block.appendChild(a);
 
-        var following = document.createElement("div");
-        following.setAttribute("id","conn_list");
-        var title = document.createElement("h2");
-        title.innerHTML = "Following";
-        following.appendChild(title);
-        
 
-        db.collection("following").doc(doc.id).get().then(function(doc) {
-          if (doc.exists) {
-            for (field in doc.data()) {
-              console.log(field);
-              following.innerHTML += field + "<br />";
-            }
-            
-          }            
-        })
-        
-        profile_conn.appendChild(following);
-        var followers = document.createElement("div");
-        followers.setAttribute("id","conn_list");
+        // var profile_conn = document.createElement("div");
+        // profile_conn.setAttribute("id","connections");
+        //
+        // var following = document.createElement("div");
+        // following.setAttribute("id","conn_list");
+        // var title = document.createElement("h2");
+        // title.innerHTML = "Following";
+        // following.appendChild(title);
 
-        var title = document.createElement("h2");
-        title.innerHTML = "Followers";
-        followers.appendChild(title);
 
-        db.collection("followers").doc(doc.id).get().then(function(doc) {
-          if (doc.exists) {
-            for (field in doc.data()) {
-              console.log(field);
-              followers.innerHTML += field + "<br />";
-            }
-            
-          }
-        })
-        
-            
-        profile_conn.appendChild(followers);
-        var profile_bod = document.createElement("div");
-        profile_bod.setAttribute("id","profile_body");
+        // db.collection("following").doc(doc.id).get().then(function(doc) {
+        //   if (doc.exists) {
+        //     for (field in doc.data()) {
+        //       console.log(field);
+        //       following.innerHTML += field + "<br />";
+        //     }
+        //
+        //   }
+        // })
+        //
+        // profile_conn.appendChild(following);
+        // var followers = document.createElement("div");
+        // followers.setAttribute("id","conn_list");
+        //
+        // var title = document.createElement("h2");
+        // title.innerHTML = "Followers";
+        // followers.appendChild(title);
 
-        profile_bod.appendChild(profile_conn);
-        profile_block.appendChild(profile_bod);
+        // db.collection("followers").doc(doc.id).get().then(function(doc) {
+        //   if (doc.exists) {
+        //     for (field in doc.data()) {
+        //       console.log(field);
+        //       followers.innerHTML += field + "<br />";
+        //     }
+        //
+        //   }
+        // })
 
+
+        // profile_conn.appendChild(followers);
+        // var profile_bod = document.createElement("div");
+        // profile_bod.setAttribute("id","profile_body");
+        //
+        // profile_bod.appendChild(profile_conn);
+        // profile_block.appendChild(profile_bod);
+        //
 
         usersDiv.appendChild(profile_block);
       })
     });
+    // Display all POSTS from database
+    var activityFeed = document.getElementById("feedDiv");
+    db.collection("annotations").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        var feed_block = document.createElement("div");
+        feed_block.setAttribute("id","feed");
+        feed_block.innerHTML += '"' + doc.data().text
+          + '" <br /><br />By: @' +doc.data().author
+          + "<br /> Civility Score: " + doc.data().civ_score
+          + " <br />Created at: "+ doc.data().created
+          + " <br />Link to article: " + doc.data().article + " <br />";
+        activityFeed.appendChild(feed_block);
+      })
+    });
 
+
+    //Display news articles using news API
+    var currentNews = document.getElementById("newsArticlesDiv");
+    var url = 'https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    //'https://newsapi.org/v2/top-headlines?' + 'country=us&' + 'apiKey=392b559ff861492d9f42692a556f6792';
+
+    const options = {
+    url: url,
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8'
+    }
+  };
+
+//   function parseHTML(url, callback) {
+//     // var text = body["response"]; //["content"]["fields"]["body"];            
+//     var response;
+//     request({
+//         url: url,
+//         method: 'GET',
+//         json: true
+//       }, function (error, response, body) {
+//         if (error || response.statusCode !== 200) {
+//           return callback(error || {statusCode: response.statusCode});
+//         }
+//         return callback(null, body);
+//       });
+//     console.log(response);
+//     return response;
+// }
+
+//   parseHTML(url, function(err, body) {
+//     if (err) {
+//         console.log(err);
+//       } else {
+//         // var html = body;
+//         // console.log(stripHtml(html));
+//         // return body;   
+//         var newsJson = JSON.stringify(body.json());
+//         console.log("newsjson ----- is ----:" + newsJson);
+//         var allNewsArticlesFromApi = document.createElement('div');
+//         allNewsArticlesFromApi.appendChild(newsJson);
+//         currentNews.appendChild("allNewsArticlesFromApi");                                                                     
+//       }
+//     });
+
+  function stripHTML(html){
+    // Create a new div element
+    var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+    return parsed;
+  }
+
+    
+    fetch(url)
+    .then(response=> response.json().then(function(response){
+      
+       var allNewsArticlesFromApi = document.createElement('div');
+       console.log(response);
+       var text = response['response']['content']['fields']['body'];
+       var blurbs = stripHTML(text);
+       for (let i = 0; i < blurbs.length; i++) {
+        if (blurbs[i].trim()!='') {
+          linebreak = document.createElement("br");
+          newBlurb = document.createTextNode(blurbs[i]);
+          allNewsArticlesFromApi.appendChild(newBlurb);
+          allNewsArticlesFromApi.appendChild(linebreak);
+        }
+       }
+      //  for (let i = 0; i < response['response']['response']['fields']['body'].length; i++) {
+      //   linebreak = document.createElement("br");
+      //   hline = document.createElement("hr");
+      //   var title = document.createTextNode(response['articles'][i]['title']);
+      //   allNewsArticlesFromApi.appendChild(title);
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+        
+      //   var body = document.createTextNode(response['articles'][i]['content']);
+      //   allNewsArticlesFromApi.appendChild(body); 
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+      //   allNewsArticlesFromApi.appendChild(hline);
+       
+      //  allNewsArticlesFromApi.appendChild(document.createTextNode(JSON.stringify(response['articles'])));
+       currentNews.appendChild(allNewsArticlesFromApi);
+     return response; //json of all articles -- works
+    }));
+
+//     var url='https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+// const request = require('request');
+// var myJSON = require("JSON");
+// var article;
+
+// var jsonResult;
+
+// const options = {
+//     url: url,
+//     method: 'GET',
+//     headers: {
+//         'Accept': 'application/json',
+//         'Accept-Charset': 'utf-8'
+//     }
+// };
+
+// // article = request(options, function(err, res, body) { 
+// //     let json = JSON.parse(body);
+// //     // console.log(json);
+// //     return json['fields'];
+// // });
+
+// function parseHTML(url, callback) {
+//     // var text = body["response"]; //["content"]["fields"]["body"];
+//     var response;
+//     request({
+//         url: url,
+//         method: 'GET',
+//         json: true
+//       }, function (error, response, body) {
+//         if (error || response.statusCode !== 200) {
+//           return callback(error || {statusCode: response.statusCode});
+//         }
+//         return callback(null, body);  
+//       });
+//     console.log(response);
+//     return response;
+// }
+
+// article = parseHTML(url, function(err, body) {
+//     if (err) {
+//         console.log(err);
+//       } else {
+//         var html = body['response']['content']['fields']['body']; 
+//         console.log(stripHtml(html));
+//         return body['response']['content']['fields']['body']; //['content']['fields'];
+//       }
+// });
+
+// console.log(article);
+
+// function stripHtml(html){
+//     // Create a new div element
+//     var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+//     return parsed;
+// }
+
+
+      //Populate this on the page:
+      //-- BUG something with promises or using the Response twice is causing this to
+      // not work even though we're successfully getting the response from the API - see console log - fix
+
+      // var clone = response.clone();
+      // clone.blob().then(function(myBlob) {
+      //   var newsJson = JSON.stringify(myBlob);
+      //   console.log("newsjson ----- is ----:" + newsJson);
+      // });
+
+      // var newsJson = JSON.stringify(clone.json());
+      // console.log("newsjson ----- is ----:" + newsJson);
+      // var allNewsArticlesFromApi = document.createElement('div');
+      // allNewsArticlesFromApi.appendChild(newsJson);
+      // currentNews.appendChild("allNewsArticlesFromApi");
+    // });
+
+    //
     // var usersDiv = document.getElementById("usersDiv");
     // db.collection("users").doc("dhuang2").onSnapshot(function(doc) {
     //     usersDiv.innerHTML = doc.data().firstname + "<br />";
@@ -247,20 +524,20 @@
             console.log(doc.data());
           })
         });
-        
+
         var art = document.createElement("div");
         var art_title = document.createElement("h2");
         var art_text = document.createElement("div");
         art_title.innerHTML = doc.data().title;
         art.appendChild(art_title);
-       
+
         db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
 
           snapshot.forEach(doc => {
             var blurb = document.createElement("div")
             blurb.setAttribute("id","blurb");
             blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
-            
+
             // for (i=1; i < size; i++) {
             //   var num = i.toString();
               // db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
@@ -288,19 +565,23 @@
         blurbsDiv.appendChild(art);
         // blurbsDiv.appendChild(document.createElement("<hr>"));
     })
-   
+
   });
 
     //Print 5 user-generated annotations
-    var annotationsDiv = document.getElementById("annotationsDiv");
-    db.collection("annotations").get().then(snapshot => {
-      snapshot.forEach(doc => {
-        var blurb = doc.data().blurb.toString();
-        annotationsDiv.innerHTML += doc.data().article + " | Article section: " + blurb + " | " + doc.data().author+ ": "+ doc.data().text + "<br /> <br />";
-      })
-    });
+    // var annotationsDiv = document.getElementById("annotationsDiv");
+    // db.collection("annotations").get().then(snapshot => {
+    //   snapshot.forEach(doc => {
+    //     var blurb = doc.data().blurb.toString();
+    //     annotationsDiv.innerHTML += doc.data().article + " | Article section: " + blurb + " | " + doc.data().author+ ": "+ doc.data().text + "<br /> <br />";
+    //   })
+    // });
 
 
   </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </body>
 </html>
