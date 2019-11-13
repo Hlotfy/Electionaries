@@ -62,14 +62,6 @@
     <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
     <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
     <hr>
-<<<<<<< HEAD
-    <div id="logged-in-user">
-      
-    </div>
-    <hr>
-    <button id="sign-in" onclick="signIn()" >Sign-In</button>
-    <button id="sign-out" onclick="signOut()" >Sign-Out</button>
-=======
     <div id="userNameDisplay">
       <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
     </div>
@@ -99,7 +91,6 @@
     <hr>
     <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
     <div id="newsArticlesDiv">It shoud be here!</div>
->>>>>>> c7446c778b2828917046cdada3a7b52edac75b1f
     <hr>
     <h2>App Sketches</h2>
     <p>Activity Feed</p>
@@ -179,12 +170,6 @@
     function signOut() {
        firebase.auth().signOut();
     }
-<<<<<<< HEAD
-
-    // var userDisplayDiv = document.getElementById("logged-in-user");
-    // console.log(firebase.auth().currentUser.displayName);
-    // userDisplayDiv.innerHTML = firebase.auth().currentUser.displayName; // + firebase.auth().currentUser.photoURL); 
-=======
     function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
@@ -216,7 +201,6 @@
       document.getElementById("tempFeedDiv").appendChild(d);
     }
 
->>>>>>> c7446c778b2828917046cdada3a7b52edac75b1f
     //Change signin/signout display based on log in state
     document.addEventListener('DOMContentLoaded', function() {
       firebase.auth().onAuthStateChanged( function(user){
@@ -386,13 +370,15 @@
   }
 
     
-    fetch(url)
-    .then(response=> response.json().then(function(response){
+    // fetch(url)
+    // .then(response=> response.json().then(function(response){
       
-       var allNewsArticlesFromApi = document.createElement('div');
-       console.log(response);
-       var text = response['response']['content']['fields']['body'];
-       var blurbs = stripHTML(text);
+    //    var allNewsArticlesFromApi = document.createElement('div');
+    //    console.log(response);
+    //    var text = response['response']['content']['fields']['body'];
+    //    var blurbs = stripHTML(text);
+
+    var blurbs = getArticle(url);
        for (let i = 0; i < blurbs.length; i++) {
         if (blurbs[i].trim()!='') {
           linebreak = document.createElement("br");
@@ -401,6 +387,7 @@
           allNewsArticlesFromApi.appendChild(linebreak);
         }
        }
+       currentNews.appendChild(allNewsArticlesFromApi);
       //  for (let i = 0; i < response['response']['response']['fields']['body'].length; i++) {
       //   linebreak = document.createElement("br");
       //   hline = document.createElement("hr");
@@ -415,9 +402,9 @@
       //   allNewsArticlesFromApi.appendChild(hline);
        
       //  allNewsArticlesFromApi.appendChild(document.createTextNode(JSON.stringify(response['articles'])));
-       currentNews.appendChild(allNewsArticlesFromApi);
-     return response; //json of all articles -- works
-    }));
+       
+    //  return response; //json of all articles -- works
+    // }));
 
 //     var url='https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
 // const request = require('request');
