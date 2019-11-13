@@ -319,9 +319,8 @@
 
     //Display news articles using news API
     var currentNews = document.getElementById("newsArticlesDiv");
-    var url = 'https://newsapi.org/v2/top-headlines?' +
-          'country=us&' +
-          'apiKey=392b559ff861492d9f42692a556f6792';
+    var url = 'https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    //'https://newsapi.org/v2/top-headlines?' + 'country=us&' + 'apiKey=392b559ff861492d9f42692a556f6792';
 
     const options = {
     url: url,
@@ -364,7 +363,11 @@
 //       }
 //     });
 
-    
+  function stripHTML(html){
+    // Create a new div element
+    var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+    return parsed;
+  }
 
     
     fetch(url)
@@ -372,23 +375,92 @@
       
        var allNewsArticlesFromApi = document.createElement('div');
        console.log(response);
-       for (let i = 0; i < response['articles'].length; i++) {
-        linebreak = document.createElement("br");
-        hline = document.createElement("hr");
-        var title = document.createTextNode(response['articles'][i]['title']);
-        allNewsArticlesFromApi.appendChild(title);
-        allNewsArticlesFromApi.appendChild(linebreak);
-        
-        var body = document.createTextNode(response['articles'][i]['content']);
-        allNewsArticlesFromApi.appendChild(body); 
-        allNewsArticlesFromApi.appendChild(linebreak);
-        allNewsArticlesFromApi.appendChild(linebreak);
-        allNewsArticlesFromApi.appendChild(hline);
+       var text = response['response']['content']['fields']['body'];
+       var blurbs = stripHTML(text);
+       for (let i = 0; i < blurbs.length; i++) {
+        if (blurbs[i].trim()!='') {
+          linebreak = document.createElement("br");
+          newBlurb = document.createTextNode(blurbs[i]);
+          allNewsArticlesFromApi.appendChild(newBlurb);
+          allNewsArticlesFromApi.appendChild(linebreak);
+        }
        }
+      //  for (let i = 0; i < response['response']['response']['fields']['body'].length; i++) {
+      //   linebreak = document.createElement("br");
+      //   hline = document.createElement("hr");
+      //   var title = document.createTextNode(response['articles'][i]['title']);
+      //   allNewsArticlesFromApi.appendChild(title);
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+        
+      //   var body = document.createTextNode(response['articles'][i]['content']);
+      //   allNewsArticlesFromApi.appendChild(body); 
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+      //   allNewsArticlesFromApi.appendChild(linebreak);
+      //   allNewsArticlesFromApi.appendChild(hline);
+       
       //  allNewsArticlesFromApi.appendChild(document.createTextNode(JSON.stringify(response['articles'])));
        currentNews.appendChild(allNewsArticlesFromApi);
      return response; //json of all articles -- works
     }));
+
+//     var url='https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+// const request = require('request');
+// var myJSON = require("JSON");
+// var article;
+
+// var jsonResult;
+
+// const options = {
+//     url: url,
+//     method: 'GET',
+//     headers: {
+//         'Accept': 'application/json',
+//         'Accept-Charset': 'utf-8'
+//     }
+// };
+
+// // article = request(options, function(err, res, body) { 
+// //     let json = JSON.parse(body);
+// //     // console.log(json);
+// //     return json['fields'];
+// // });
+
+// function parseHTML(url, callback) {
+//     // var text = body["response"]; //["content"]["fields"]["body"];
+//     var response;
+//     request({
+//         url: url,
+//         method: 'GET',
+//         json: true
+//       }, function (error, response, body) {
+//         if (error || response.statusCode !== 200) {
+//           return callback(error || {statusCode: response.statusCode});
+//         }
+//         return callback(null, body);  
+//       });
+//     console.log(response);
+//     return response;
+// }
+
+// article = parseHTML(url, function(err, body) {
+//     if (err) {
+//         console.log(err);
+//       } else {
+//         var html = body['response']['content']['fields']['body']; 
+//         console.log(stripHtml(html));
+//         return body['response']['content']['fields']['body']; //['content']['fields'];
+//       }
+// });
+
+// console.log(article);
+
+// function stripHtml(html){
+//     // Create a new div element
+//     var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+//     return parsed;
+// }
+
+
       //Populate this on the page:
       //-- BUG something with promises or using the Response twice is causing this to
       // not work even though we're successfully getting the response from the API - see console log - fix
