@@ -85,6 +85,11 @@
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
     <hr>
     <h1 id="userDivTitle">All our Current Users!!</h2>
+    <div id="userSearchDiv">
+      <input type="text" id="userSearchInput" class="form-control" placeholder="Search for a user..." aria-label="Search for a user..." aria-describedby="button-addon2">
+      <button id="post-btn" onclick="searchUser()" class="btn btn-primary" type="button" id="button-addon2">Search</button>
+      <div id="searchResultMessageDiv"></div>
+    </div>
     <h5 id="usersDiv"></h5>
     <hr>
     <h1 id="feedDivTitle">All Current User Posts!! (Activity Feed)</h2>
@@ -185,6 +190,39 @@
     function signOut() {
        firebase.auth().signOut();
     }
+    function searchUser(){
+        var searchUser = document.getElementById("userSearchInput").value;
+        db.collection("users").where ("fullName", "==", searchUser)
+        .get()
+        .then(function(querySnapshot) {
+              console.log("IF querySnapshot.empty is true, then user is NOT found in DB -> display err msg " + querySnapshot.empty);
+              if (!querySnapshot.empty){ //user IS FOUND --> display link to their profile
+                querySnapshot.forEach(function(doc) {
+                  console.log("querySnapshot.empty is " + querySnapshot.empty);
+                    var userID = doc.data().id;
+                    console.log("that query is ok; querySnapshot.val()/userToGet is: "  + doc.data().fullName);
+                    console.log("endpoint to go to: "  + userID);
+                    //now redirect user to the Profile Page of the searched user
+                    var a = document.createElement('a');
+                    var link = document.createTextNode("Go to the profile page of " + searchUser);
+                    a.appendChild(link);
+                    a.title = ("Go to the profile page of " + searchUser);
+                    a.href = "https://electionaries.firebaseapp.com/profile.html?id="+userID;
+                    var searchResultDiv = document.getElementById("searchResultMessageDiv");
+                    searchResultDiv.appendChild(a);
+                });
+              } else { //user is NOT found in DB -> display err msg //minor TODO add CSS to make error message display flash to indicate each time it's called
+                  console.log("u tried to find" + searchUser + " but that user DNE!");
+                  var errDiv = document.getElementById("searchResultMessageDiv");
+                  errDiv.innerHTML = ("The user you're looking for doesn't exist on our network!");
+              }
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
+
     function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
@@ -243,6 +281,12 @@
         }
       });
     });
+
+    //Search bar to find users in DB
+    var searchDiv = document.getElementById("userSearchDiv");
+
+
+
 
     // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
