@@ -56,7 +56,10 @@
         Civility Score:  <span id="civ_score"></span>
       <hr>
       <h2>Users I Follow</h2>
+      <div id="following_list"></div>
       <!-- insert following/follow lists here -->
+      <h2>Users Who Follow Me</h2>
+      <div id="follower_list"></div>
       <hr>
   </div>
   <h2>All Annotations I've Made</h2>
@@ -95,21 +98,73 @@
               propic.appendChild(profile_img);
              document.getElementById("name").innerHTML = doc.data().fullName;
              document.getElementById("civ_score").innerHTML = doc.data().civ_score;
-         });
 
-         var myAnnotationsDiv = document.getElementById("allUserAnnotations");
+            var following = document.getElementById("following_list");
+            // var a = document.createElement('a');
+            db.collection("following").doc(doc.data().username).get().then(function(doc) {
+              // querySnapshot.then(function(doc) {
+                if (doc.exists) {
+                  for (field in doc.data()) {
+                    console.log(field);
+                    var a = document.createElement('a');
+                    a.setAttribute("id",field+"_flwing");
+                    // var linkText = document.createTextNode(field);
+                    // a.appendChild(linkText);
+                    console.log(typeof(field));
+                    following.appendChild(a);
+                    following.appendChild(document.createElement("br"));
+                    db.collection("users").doc(field).get().then(function(doc) { //) {
+                      // querySnapshot.forEach(function(doc) {
+                            // if (doc.data().username === field) { 
+                                var cora = document.getElementById(doc.data().id+"_flwing");
+                                console.log(doc.data());
+                                cora.href = "profile.html?id="+doc.id;
+                                var linkText = document.createTextNode(doc.data().username);
+                                cora.appendChild(linkText);
+                                // console.log(a.href);
+                                
+                            // }
+                          // });
+                        });
+                      }
+                      } 
+                    
+                });
 
-         //trying to get the user's Full Name to input into next function
-         // db.collection("users").where ("id", "==", user_id)
-         // .get()
-         // .then(function(querySnapshot) {
-         //     querySnapshot.forEach(function(doc) {
-         //         var userFullName = doc.data().fullName;
-         //     });
-         // });
+            var followers = document.getElementById("follower_list");
+            // var a = document.createElement('a');
+            db.collection("followers").doc(doc.data().username).get().then(function(doc) {
+              // querySnapshot.then(function(doc) {
+                if (doc.exists) {
+                  for (field in doc.data()) {
+                    console.log(field);
+                    var a = document.createElement('a');
+                    a.setAttribute("id",field);
+                    // var linkText = document.createTextNode(field);
+                    // a.appendChild(linkText);
+                    console.log(typeof(field));
+                    followers.appendChild(a);
+                    followers.appendChild(document.createElement("br"));
+                    db.collection("users").doc(field).get().then(function(doc) { //) {
+                      // querySnapshot.forEach(function(doc) {
+                            // if (doc.data().username === field) { 
+                                var cora = document.getElementById(doc.data().id);
+                                console.log(doc.data());
+                                cora.href = "profile.html?id="+doc.id;
+                                var linkText = document.createTextNode(doc.data().username);
+                                cora.appendChild(linkText);
+                                // console.log(a.href);
+                                
+                            // }
+                          // });
+                        });
+                      }
+                      } 
+                    
+                });
 
-         //Get all annotations of a given author Full Name
-         db.collection("annotations").where ("author", "==", "Shirley Lei") //where author is the owner of the current profile  - TODO get the actual author
+            var myAnnotationsDiv = document.getElementById("allUserAnnotations");
+            db.collection("annotations").where ("author", "==", doc.data().username) //where author is the owner of the current profile  - TODO get the actual author
           .get()
           .then(function(querySnapshot) {
               querySnapshot.forEach(function(doc) {
@@ -120,7 +175,7 @@
                   myAnnotationsDiv.appendChild(document.createTextNode(doc.data().text));
                   myAnnotationsDiv.appendChild(br);
                   myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild("Created at: " + document.createTextNode(doc.data().created));
+                  myAnnotationsDiv.appendChild(document.createTextNode("Created at: " + doc.data().created));
                   myAnnotationsDiv.appendChild(br);
                   myAnnotationsDiv.appendChild(br);
                   myAnnotationsDiv.appendChild(br);
@@ -137,7 +192,53 @@
      } catch (e) {
          console.error(e);
      }
+      });
     });
+        // Code to Get Followering List
+        
+        
+    
+        //
+        // profile_conn.appendChild(following);
+        // var followers = document.createElement("div");
+        // followers.setAttribute("id","conn_list");
+        //
+        // var title = document.createElement("h2");
+        // title.innerHTML = "Followers";
+        // followers.appendChild(title);
+
+        // db.collection("followers").doc(doc.id).get().then(function(doc) {
+        //   if (doc.exists) {
+        //     for (field in doc.data()) {
+        //       console.log(field);
+        //       followers.innerHTML += field + "<br />";
+        //     }
+        //
+        //   }
+        // })
+
+
+        // profile_conn.appendChild(followers);
+        // var profile_bod = document.createElement("div");
+        // profile_bod.setAttribute("id","profile_body");
+        //
+        // profile_bod.appendChild(profile_conn);
+        // profile_block.appendChild(profile_bod);
+        //
+
+         
+
+         //trying to get the user's Full Name to input into next function
+         // db.collection("users").where ("id", "==", user_id)
+         // .get()
+         // .then(function(querySnapshot) {
+         //     querySnapshot.forEach(function(doc) {
+         //         var userFullName = doc.data().fullName;
+         //     });
+         // });
+
+         //Get all annotations of a given author Full Name
+    
 
 
   </script>
