@@ -12,7 +12,7 @@
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
   <!-- <script  src="/Users/halalotfy/Downloads/request-master/request.js"></script> -->
-  
+
   <!-- <script src="/__/firebase/init.js"></script> -->
   <!-- <script  src="/__/firebase/7.1.0/firebase-database.js"></script>
   <script  src="/__/firebase/7.1.0/firebase-messaging.js"></script>
@@ -62,6 +62,21 @@
     <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
     <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
     <hr>
+    <div id="p3Update">
+      <h1>Accomplished in P3:</h2>
+      <ul>
+        <li>Display all Users in our network (database) on platform, and created their individual Profile pages (see below)</li>
+        <li>Added all annotations by a user to that user's Profile page (with minor bug to be fixed in P4)</li>
+        <li>Display all Annotations in our network (database) on platform Activity Feed (see below)</li>
+        <li>Enabled Posting functionality, where user's post is added to the database and displayed on front end</li>
+        <li>Added News API (news aggregator) and The Guardian News API (in P4, we will link annotations to news articles pulled from these news sources)</li>
+        <li>Paper draft (see below)</li>
+      </ul>
+    </div>
+    <hr>
+    <div class="paper-container">
+      <embed src="files/Electionaries-SIGCHI-paper.pdf" type="application/pdf" width="100%" height="600px"/>
+    </div>
     <div id="userNameDisplay">
       <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
     </div>
@@ -70,6 +85,11 @@
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
     <hr>
     <h1 id="userDivTitle">All our Current Users!!</h2>
+    <div id="userSearchDiv">
+      <input type="text" id="userSearchInput" class="form-control" placeholder="Search for a user..." aria-label="Search for a user..." aria-describedby="button-addon2">
+      <button id="post-btn" onclick="searchUser()" class="btn btn-primary" type="button" id="button-addon2">Search</button>
+      <div id="searchResultMessageDiv"></div>
+    </div>
     <h5 id="usersDiv"></h5>
     <hr>
     <h1 id="feedDivTitle">All Current User Posts!! (Activity Feed)</h2>
@@ -170,6 +190,39 @@
     function signOut() {
        firebase.auth().signOut();
     }
+    function searchUser(){
+        var searchUser = document.getElementById("userSearchInput").value;
+        db.collection("users").where ("fullName", "==", searchUser)
+        .get()
+        .then(function(querySnapshot) {
+              console.log("IF querySnapshot.empty is true, then user is NOT found in DB -> display err msg " + querySnapshot.empty);
+              if (!querySnapshot.empty){ //user IS FOUND --> display link to their profile
+                querySnapshot.forEach(function(doc) {
+                  console.log("querySnapshot.empty is " + querySnapshot.empty);
+                    var userID = doc.data().id;
+                    console.log("that query is ok; querySnapshot.val()/userToGet is: "  + doc.data().fullName);
+                    console.log("endpoint to go to: "  + userID);
+                    //now redirect user to the Profile Page of the searched user
+                    var a = document.createElement('a');
+                    var link = document.createTextNode("Go to the profile page of " + searchUser);
+                    a.appendChild(link);
+                    a.title = ("Go to the profile page of " + searchUser);
+                    a.href = "https://electionaries.firebaseapp.com/profile.html?id="+userID;
+                    var searchResultDiv = document.getElementById("searchResultMessageDiv");
+                    searchResultDiv.appendChild(a);
+                });
+              } else { //user is NOT found in DB -> display err msg //minor TODO add CSS to make error message display flash to indicate each time it's called
+                  console.log("u tried to find" + searchUser + " but that user DNE!");
+                  var errDiv = document.getElementById("searchResultMessageDiv");
+                  errDiv.innerHTML = ("The user you're looking for doesn't exist on our network!");
+              }
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
+
     function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
@@ -228,6 +281,12 @@
         }
       });
     });
+
+    //Search bar to find users in DB
+    var searchDiv = document.getElementById("userSearchDiv");
+
+
+
 
     // Display all users from database
     var usersDiv = document.getElementById("usersDiv");
@@ -354,7 +413,7 @@
   getArticle(url);
 
 //   function parseHTML(url, callback) {
-//     // var text = body["response"]; //["content"]["fields"]["body"];            
+//     // var text = body["response"]; //["content"]["fields"]["body"];
 //     var response;
 //     request({
 //         url: url,
@@ -376,12 +435,12 @@
 //       } else {
 //         // var html = body;
 //         // console.log(stripHtml(html));
-//         // return body;   
+//         // return body;
 //         var newsJson = JSON.stringify(body.json());
 //         console.log("newsjson ----- is ----:" + newsJson);
 //         var allNewsArticlesFromApi = document.createElement('div');
 //         allNewsArticlesFromApi.appendChild(newsJson);
-//         currentNews.appendChild("allNewsArticlesFromApi");                                                                     
+//         currentNews.appendChild("allNewsArticlesFromApi");
 //       }
 //     });
 
@@ -391,37 +450,36 @@
     return parsed;
   }
 
-    
-    // fetch(url)
-    // .then(response=> response.json().then(function(response){
-      
-    //    var allNewsArticlesFromApi = document.createElement('div');
-    //    console.log(response);
-    //    var text = response['response']['content']['fields']['body'];
-    //    var blurbs = stripHTML(text);
 
-      //  for (let i = 0; i < blurbs.length; i++) {
-      //   if (blurbs[i].trim()!='') {
-      //     linebreak = document.createElement("br");
-      //     newBlurb = document.createTextNode(blurbs[i]);
-      //     allNewsArticlesFromApi.appendChild(newBlurb);
-      //     allNewsArticlesFromApi.appendChild(linebreak);
-      //   }
-      //  }
-      //  currentNews.appendChild(allNewsArticlesFromApi);
+    fetch(url)
+    .then(response=> response.json().then(function(response){
+
+       var allNewsArticlesFromApi = document.createElement('div');
+       console.log(response);
+       var text = response['response']['content']['fields']['body'];
+       var blurbs = stripHTML(text);
+       for (let i = 0; i < blurbs.length; i++) {
+        if (blurbs[i].trim()!='') {
+          linebreak = document.createElement("br");
+          newBlurb = document.createTextNode(blurbs[i]);
+          allNewsArticlesFromApi.appendChild(newBlurb);
+          allNewsArticlesFromApi.appendChild(linebreak);
+        }
+       }
+      }));
       //  for (let i = 0; i < response['response']['response']['fields']['body'].length; i++) {
       //   linebreak = document.createElement("br");
       //   hline = document.createElement("hr");
       //   var title = document.createTextNode(response['articles'][i]['title']);
       //   allNewsArticlesFromApi.appendChild(title);
       //   allNewsArticlesFromApi.appendChild(linebreak);
-        
+
       //   var body = document.createTextNode(response['articles'][i]['content']);
-      //   allNewsArticlesFromApi.appendChild(body); 
+      //   allNewsArticlesFromApi.appendChild(body);
       //   allNewsArticlesFromApi.appendChild(linebreak);
       //   allNewsArticlesFromApi.appendChild(linebreak);
       //   allNewsArticlesFromApi.appendChild(hline);
-       
+
       //  allNewsArticlesFromApi.appendChild(document.createTextNode(JSON.stringify(response['articles'])));
        
     //  return response; //json of all articles -- works
@@ -443,7 +501,7 @@
 //     }
 // };
 
-// // article = request(options, function(err, res, body) { 
+// // article = request(options, function(err, res, body) {
 // //     let json = JSON.parse(body);
 // //     // console.log(json);
 // //     return json['fields'];
@@ -460,7 +518,7 @@
 //         if (error || response.statusCode !== 200) {
 //           return callback(error || {statusCode: response.statusCode});
 //         }
-//         return callback(null, body);  
+//         return callback(null, body);
 //       });
 //     console.log(response);
 //     return response;
@@ -470,7 +528,7 @@
 //     if (err) {
 //         console.log(err);
 //       } else {
-//         var html = body['response']['content']['fields']['body']; 
+//         var html = body['response']['content']['fields']['body'];
 //         console.log(stripHtml(html));
 //         return body['response']['content']['fields']['body']; //['content']['fields'];
 //       }
