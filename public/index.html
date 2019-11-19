@@ -21,23 +21,25 @@
   <!-- <script  src="/__/firebase/init.js"></script> -->
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    #article {display: flex;}
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
-    #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
+    #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;min-width: 100px;}
     #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
     #currentPost {background-color: #ffcccc; width: 80%; padding: 5px; margin: 3px;}
     #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
     #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
     #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
     #conn_list h2 { color:violet; font-weight: bold; }
-    #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+    #message { background: white; margin: 10px; padding: 32px 24px; border-radius: 3px; }
     #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
     #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
     #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-    #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-    #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+    #usersDiv {display: flex;}
+    /* #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; } */
+    /* #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); } */
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
     @media (max-width: 600px) {
@@ -54,17 +56,34 @@
       display: inline-block;
       font-size: 16px;
     }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+    <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
+    Electionaries
+    </a>
+    <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
+    <div id="userNameDisplay">
+    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
+  </nav>
+  <nav class="navbar navbar-light" style="background-color: #f1f2f6;">
+    <div id="userSearchDiv">
+      <input type="text" id="userSearchInput" class="form-control" placeholder="Search for a user..." aria-label="Search for a user..." aria-describedby="button-addon2">
+      <button id="post-btn" onclick="searchUser()" class="btn btn-secondary" type="button" id="button-addon2">Search</button>
+      <div id="searchResultMessageDiv"></div>
+    </div>
+  </nav>
   <div id="message">
-    <h2>CS323 Term Project | Shirley, Dom, Hala </h2>
-    <h1>Electionaries: A Social Network to Facilitate Civil Political Discussion</h1>
-    <hr>
-    <div id="p3Update">
-      <h1>Accomplished in P3:</h2>
-      <ul>
+    <div class="hidden" id="p3Update">
+      <h1 >Accomplished in P3:</h2>
+      <ul >
         <li>Display all Users in our network (database) on platform, and created their individual Profile pages (see below)</li>
         <li>Added all annotations by a user to that user's Profile page (with minor bug to be fixed in P4)</li>
         <li>Display all Annotations in our network (database) on platform Activity Feed (see below)</li>
@@ -74,26 +93,14 @@
       </ul>
     </div>
     <hr>
-    <div class="paper-container">
+    <div class="paper-container hidden">
       <embed src="files/Electionaries-SIGCHI-paper.pdf" type="application/pdf" width="100%" height="600px"/>
     </div>
-    <div id="userNameDisplay">
-      <!-- <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a> -->
-    </div>
-    <div id="allProfilesDiv"></div>
+    <div id="userNameDisplay"></div>
     <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
-    <hr>
-    <h1 id="userDivTitle">All our Current Users!!</h2>
-    <div id="userSearchDiv">
-      <input type="text" id="userSearchInput" class="form-control" placeholder="Search for a user..." aria-label="Search for a user..." aria-describedby="button-addon2">
-      <button id="post-btn" onclick="searchUser()" class="btn btn-primary" type="button" id="button-addon2">Search</button>
-      <div id="searchResultMessageDiv"></div>
-    </div>
-    <h5 id="usersDiv"></h5>
-    <hr>
-    <h1 id="feedDivTitle">All Current User Posts!! (Activity Feed)</h2>
-    <div id="activityFeed">
+    <h1 id="feedDivTitle" class="hidden">All Annotator Profiles</h2>
+    <div class="hidden" id="activityFeed">
       <div id="composeDiv">
         <h5>Make a Post to Activity Feed Below</h5>
         What article is on your mind?<br>
@@ -109,40 +116,46 @@
       <div id="feedDiv"></div>
     </div>
     <hr>
-    <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
-    <div id="newsArticlesDiv">It shoud be here!</div>
-    <hr>
-    <h2>App Sketches</h2>
-    <p>Activity Feed</p>
-    <img src="p2_3.png" style="width:700px">
-    <p>Profile and List of Users</p>
-    <img src="ps2_1.png" style="width:700px">
-    <p>Article/Annotation Page</p>
-    <img src="p2_2.png" style="width:700px">
-    <hr>
-    <h2>ER Diagram</h2>
-    <img src="ps2_diagram.png" style="width:700px">
-    <hr>
+    <div class="hidden">
+      <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
+      <div id="newsArticlesDiv">It shoud be here!</div>
+      <h2 class="hidden">App Sketches</h2>
+      <p>Activity Feed</p>
+      <img src="p2_3.png" style="width:700px">
+      <p>Profile and List of Users</p>
+      <img src="ps2_1.png" style="width:700px">
+      <p>Article/Annotation Page</p>
+      <img src="p2_2.png" style="width:700px">
+      <hr>
+      <h2 class="hidden">ER Diagram</h2>
+      <img src="ps2_diagram.png" style="width:700px" class="hidden">
+      <hr>
+    </div>
+    <h1 id="blurbDivTitle">Top News</h2>
     <div id="article">
-    <h1 id="blurbDivTitle">Multiple News "Blurbs" Printed Below:</h2>
     <h5 id="blurbsDiv"></h5>
     </div>
     <hr>
-    <h1 id="annotationsDivTitle">5 User-Generated Annotations (Posts) Printed Below:</h2>
+    <h1 id="userDivTitle">All Annotator Profiles</h2>
+    <h5 id="usersDiv"></h5>
+    <hr>
+    <h1 id="annotationsDivTitle" class="hidden">5 User-Generated Annotations (Posts) Printed Below:</h2>
     <h5 id="annotationsDiv"></h5>
 
-    <h1>Project Concept Background</h1>
+    <h1 class="hidden" >Project Concept Background</h1>
     <hr>
-    <p>
+    <p class="hidden">
       Navigating modern day elections to get a balanced view of different topics can be tricky. As articulated in “Bursting Your (Filter) Bubble: Strategies for Promoting Diverse Exposure,” social network sites can often create echo chambers for users, leading them to see content that reinforces their opinions, rather than different opinions to gain a broader perspective. The paper “The top five reasons for lurking: improving community experiences for everyone” explains that sites also have design features that may not promote an encouraging environment for users to interact and engage. With the 2020 presidential election coming up, we designed a whole new social network site that encourages users to view summaries of election topics, read full articles from various conservative and liberal sites, as well as annotate and post fact-based comments. This social network site will provide users with the opportunity to view different news articles from various sites on both sides of the political spectrum, and also include design features that may potentially improve the community experience for all users.
     </p>
-    <h1>References/Links</h1>
-    <hr>
-    <a href = "https://drive.google.com/file/d/1o9Cy--ODVdafGyLFjCpwuBa9VNAlZF0M/view">Social theory article</a>
-    <a href = "https://www.dhi.ac.uk/san/waysofbeing/data/communities-murphy-preece-2004b.pdf">Social computing article</a>
-    <a href = "https://github.com/Hlotfy/Electionaries">Open Github repository</a>
-    <a href = "https://console.firebase.google.com/u/0/project/electionaries/overview">Open Firebase</a>
-    <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <h1 class="hidden">References/Links</h1>
+    <hr class="hidden">
+    <div class="hidden">
+      <a href = "https://drive.google.com/file/d/1o9Cy--ODVdafGyLFjCpwuBa9VNAlZF0M/view" class="hidden">Social theory article</a>
+      <a href = "https://www.dhi.ac.uk/san/waysofbeing/data/communities-murphy-preece-2004b.pdf" class="hidden">Social computing article</a>
+      <a href = "https://github.com/Hlotfy/Electionaries" class="hidden">Open Github repository</a>
+      <a href = "https://console.firebase.google.com/u/0/project/electionaries/overview" class="hidden">Open Firebase</a>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/" class="hidden">Open Hosting Documentation</a>
+    </div>
   </div>
   <p id="load">Firebase SDK Loading&hellip;</p>
 
@@ -195,6 +208,9 @@
         db.collection("users").where ("fullName", "==", searchUser)
         .get()
         .then(function(querySnapshot) {
+              //clear prev existing search results
+              console.log("clearing");
+              document.getElementById("searchResultMessageDiv").innerHTML = "";
               console.log("IF querySnapshot.empty is true, then user is NOT found in DB -> display err msg " + querySnapshot.empty);
               if (!querySnapshot.empty){ //user IS FOUND --> display link to their profile
                 querySnapshot.forEach(function(doc) {
@@ -262,11 +278,15 @@
             document.getElementById("sign-out").style.display = "block";
             console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
 
-            document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
-
+            // document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
+            var a = document.createElement('a');
+            var linkText = document.createTextNode(firebase.auth().currentUser.displayName);
+            a.appendChild(linkText);
+          //  a.title = doc.data().fullName;
+            a.href = "profile.html?id=llrJ5oIPLbRW0TB0rq4w29vtuoS2";
+            document.getElementById("userNameDisplay").appendChild(a);
             // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
             // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
-
             var userImg = document.createElement('img');
             console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
             userImg.src = firebase.auth().currentUser.photoURL;
@@ -392,7 +412,7 @@
         'Accept-Charset': 'utf-8'
     }
   };
-  
+
   function getArticle(url) {
   var article;
   fetch(url)
@@ -482,7 +502,7 @@
        for (let i = 0; i < cleanBlurbs.length; i++) {
         // if (blurbs[i].trim().replace(' ','')!='') {
             var blurbText = {"text": cleanBlurbs[i], "num": i+1};
-            db.collection("articles").doc(real_id).collection('blurbs').doc(String(i+1)).set(blurbText) 
+            db.collection("articles").doc(real_id).collection('blurbs').doc(String(i+1)).set(blurbText)
             .then(function() {
                 console.log("Document successfully written!");
             })
@@ -491,7 +511,7 @@
             });
           linebreak = document.createElement("br");
           newBlurb = document.createTextNode(cleanBlurbs[i]);
-          
+
           allNewsArticlesFromApi.appendChild(newBlurb);
           allNewsArticlesFromApi.appendChild(linebreak);
         // }
@@ -511,7 +531,7 @@
       //   allNewsArticlesFromApi.appendChild(hline);
 
       //  allNewsArticlesFromApi.appendChild(document.createTextNode(JSON.stringify(response['articles'])));
-       
+
     //  return response; //json of all articles -- works
     // }));
 
@@ -614,21 +634,36 @@
     var article = document.getElementById("article");
     db.collection("articles").get().then(snapshot => {
       snapshot.forEach(doc => {
+
+//         <div class="card" style="width: 18rem;">
+//   <img src="..." class="card-img-top" alt="...">
+//   <div class="card-body">
+//     <h5 class="card-title">Card title</h5>
+//     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+//     <a href="#" class="btn btn-primary">Go somewhere</a>
+//   </div>
+// </div>
+        var d = document.createElement("div");
+        d.class = "card";
+        d.style.width = "18rem";
+        d.style.background = "#f1f2f6";
+        d.style.margin= "5px";
+        d.style.padding= "10px";
         var art_id = doc.id;
         // var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
         //   snapshot.forEach(doc => {
         //     console.log(doc.data());
         //   })
         // });
-
         var art_link = document.createElement("a");
         // var art_title = document.createElement("h2");
         // var art_text = document.createElement("div");
         // art_title.innerHTML = doc.data().title;
         art_link.innerHTML = doc.data().title; //.appendChild(art_title);
         art_link.href = "article.html?id="+art_id; //https://electionaries.firebaseapp.com/
-
-        article.appendChild(art_link);
+        art_link.class = "card-title";
+        d.appendChild(art_link);
+        article.appendChild(d);
         // blurbsDiv.appendChild(article);
 
         })
@@ -665,9 +700,9 @@
           // })
           // art_text.innerHTML += "<hr> <hr>";
         // })
-       
+
         // blurbsDiv.appendChild(document.createElement("<hr>"));
-  
+
 
     //Print 5 user-generated annotations
     // var annotationsDiv = document.getElementById("annotationsDiv");
