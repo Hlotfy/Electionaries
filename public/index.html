@@ -378,7 +378,10 @@
 
     //Display news articles using news API
     var currentNews = document.getElementById("newsArticlesDiv");
-    var url = 'https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    var url = 'https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b'
+    // var url = 'https://content.guardianapis.com/us-news/2019/nov/18/ghislaine-maxwell-prince-andrew-friend-jeffrey-epstein-controversy-hiding?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    // var url = 'https://content.guardianapis.com/world/2019/nov/18/china-accuses-britain-of-taking-sides-on-hong-kong-protests?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    // var url = '';
     //'https://newsapi.org/v2/top-headlines?' + 'country=us&' + 'apiKey=392b559ff861492d9f42692a556f6792';
 
     const options = {
@@ -396,6 +399,7 @@
     .then(response=> response.json().then(function(response){
        console.log(response);
        var text = response['response']['content']['fields']['body'];
+       console.log(text);
        blurbs = stripHTML(text);
        for (let i = 0; i < blurbs.length; i++) {
         if (blurbs[i].trim()!='') {
@@ -410,7 +414,7 @@
     return article;
   }
 
-  getArticle(url);
+  // getArticle(url);
 
 //   function parseHTML(url, callback) {
 //     // var text = body["response"]; //["content"]["fields"]["body"];
@@ -446,25 +450,51 @@
 
   function stripHTML(html){
     // Create a new div element
-    var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+    var parsed = html.replace(/<[^>]+>/g, '').split('.');
+    console.log(parsed);
     return parsed;
   }
-
 
     fetch(url)
     .then(response=> response.json().then(function(response){
 
        var allNewsArticlesFromApi = document.createElement('div');
        console.log(response);
+       var newArticle = {
+        "added_by": "hlotfy",
+        "link": response['response']['content']['webUrl'],
+        "source": "Guardian",
+        "title": response['response']['content']['webTitle'],
+        "id": response['response']['content']['id'],
+        "added_on": new Date(),
+       };
        var text = response['response']['content']['fields']['body'];
        var blurbs = stripHTML(text);
-       for (let i = 0; i < blurbs.length; i++) {
-        if (blurbs[i].trim()!='') {
+       var real_id = String(response['response']['content']['id']).split('/').toString();
+       console.log(real_id);
+      //  var artId = "guardian_"+Math.random().toString().substring(2, 5);
+       db.collection("articles").doc(real_id).set(newArticle);
+       console.log("blurb list: "+blurbs);
+       var cleanBlurbs = blurbs.filter(function(value, index, arr){
+          return value.trim().replace(' ','')!='';
+       });
+       console.log("blurb list: "+cleanBlurbs);
+       for (let i = 0; i < cleanBlurbs.length; i++) {
+        // if (blurbs[i].trim().replace(' ','')!='') {
+            var blurbText = {"text": cleanBlurbs[i], "num": i+1};
+            db.collection("articles").doc(real_id).collection('blurbs').doc(String(i+1)).set(blurbText) 
+            .then(function() {
+                console.log("Document successfully written!");
+            })
+            .catch(function(error) {
+                console.error("Error writing document: ", error);
+            });
           linebreak = document.createElement("br");
-          newBlurb = document.createTextNode(blurbs[i]);
+          newBlurb = document.createTextNode(cleanBlurbs[i]);
+          
           allNewsArticlesFromApi.appendChild(newBlurb);
           allNewsArticlesFromApi.appendChild(linebreak);
-        }
+        // }
        }
       }));
       //  for (let i = 0; i < response['response']['response']['fields']['body'].length; i++) {
@@ -581,58 +611,63 @@
 
     //Print multiple blurbs
     var blurbsDiv = document.getElementById("blurbsDiv");
-    var article_id = document.getElementById("article");
+    var article = document.getElementById("article");
     db.collection("articles").get().then(snapshot => {
       snapshot.forEach(doc => {
         var art_id = doc.id;
-        var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
-          snapshot.forEach(doc => {
-            console.log(doc.data());
-          })
-        });
+        // var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
+        //   snapshot.forEach(doc => {
+        //     console.log(doc.data());
+        //   })
+        // });
 
-        var art = document.createElement("div");
-        var art_title = document.createElement("h2");
-        var art_text = document.createElement("div");
-        art_title.innerHTML = doc.data().title;
-        art.appendChild(art_title);
+        var art_link = document.createElement("a");
+        // var art_title = document.createElement("h2");
+        // var art_text = document.createElement("div");
+        // art_title.innerHTML = doc.data().title;
+        art_link.innerHTML = doc.data().title; //.appendChild(art_title);
+        art_link.href = "article.html?id="+art_id; //https://electionaries.firebaseapp.com/
 
-        db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
+        article.appendChild(art_link);
+        // blurbsDiv.appendChild(article);
 
-          snapshot.forEach(doc => {
-            var blurb = document.createElement("div")
-            blurb.setAttribute("id","blurb");
-            blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
+        })
+
+      });
+
+        // db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
+
+        //   snapshot.forEach(doc => {
+        //     var blurb = document.createElement("div")
+        //     blurb.setAttribute("id","blurb");
+        //     blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
 
             // for (i=1; i < size; i++) {
             //   var num = i.toString();
               // db.collection("articles").doc("nyt_1").collection("blurbs").doc(num).onSnapshot(function(doc) {
                 // art_text.innerHTML += doc.data().text + "<br /> <br />";
-                db.collection("annotations").where('article','==',art_id).where('blurb','==', parseInt(doc.id)).get().then(snapshot => {
-                  snapshot.forEach(doc => {
-                    console.log(doc.data());
+                // db.collection("annotations").where('article','==',art_id).where('blurb','==', parseInt(doc.id)).get().then(snapshot => {
+                  // snapshot.forEach(doc => {
+                  //   console.log(doc.data());
 
-                    var new_note = document.createElement("div")
-                    new_note.setAttribute("id","note");
-                    var txt = document.createElement("h4");
-                    txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
-                    console.log(doc.data().text);
-                    new_note.appendChild(txt);
-                    blurb.appendChild(new_note);
-                  })
-                  })
-                art_text.appendChild(blurb);
+                  //   var new_note = document.createElement("div");
+                  //   new_note.setAttribute("id","note");
+                  //   var txt = document.createElement("h4");
+                  //   txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
+                  //   console.log(doc.data().text);
+                  //   new_note.appendChild(txt);
+                  //   blurb.appendChild(new_note);
+                  // })
+                  // })
+                // art_text.appendChild(blurb);
 
           // }
-          })
+          // })
           // art_text.innerHTML += "<hr> <hr>";
-        })
-        art.appendChild(art_text);
-        blurbsDiv.appendChild(art);
+        // })
+       
         // blurbsDiv.appendChild(document.createElement("<hr>"));
-    })
-
-  });
+  
 
     //Print 5 user-generated annotations
     // var annotationsDiv = document.getElementById("annotationsDiv");
