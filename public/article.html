@@ -16,8 +16,8 @@
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
+    #note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left;  padding: 3px; margin: 8px;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
-    
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;}
     #blurb {padding: 5px; width: 100%;text-align: left;}
     #blurb:hover {border: solid; border-width: thin;}
@@ -227,14 +227,16 @@
         var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
         
         var i = 1;
-            console.log(article_blurbs.orderBy("num").get());
+            // console.log(article_blurbs.orderBy("num").get());
             article_blurbs.orderBy("num").get().then(snapshot => {
                 snapshot.forEach(doc => {
                 
                     var blurb = document.createElement("button")
                     blurb.setAttribute("id","blurb");
                     blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
-
+                    blurb.setAttribute("value",doc.data().num);
+                    var note_pad = document.createElement("div");
+                    note_pad.setAttribute('id','note_pad');
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
@@ -243,17 +245,20 @@
                         txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
                         console.log(doc.data().text);
                         new_note.appendChild(txt);
-                        blurb.appendChild(new_note);
+                        note_pad.appendChild(new_note);
                         });
+                        
                     });
-                    blurb.onclick = function() { 
-                        console.log("ANYTHING");
-                        var note = $(this).find("#note"); 
-                        note.toggle(); 
-                        openNav(); //.slideToggle();
-                        $("#annote_menu").val(doc.data().num);
-                        console.log($("#annote_menu").val());
-                    };
+                    blurb.appendChild(note_pad);
+                    blurb.addEventListener("click",blurbClick);
+                    // function() { 
+                    //     // console.log("ANYTHING");
+                    //     var note = $(this).find("#note"); 
+                    //     note.toggle(); 
+                    //     openNav(); //.slideToggle();
+                    //     $("#annote_menu").val(doc.data().num);
+                    //     console.log($("#annote_menu").val());
+                    // };
                     article.appendChild(blurb);
                     
                     
@@ -263,6 +268,32 @@
       });
   }
 
+  function blurbClick() { 
+      var note = $(this).find("#note"); 
+      console.log("the value of this blurb is: "+this.value);
+      note.toggle(); 
+      var annote_menu = document.getElementById("annote_menu");
+      var article = document.getElementById("article");
+      $("#annote_menu").val(this.value);
+      if (document.getElementById("annote_menu").style.width === "250px") {
+        document.getElementById("annote_menu").style.width = "0";
+        document.getElementById("article").style.marginRight = "50px";
+        annote_menu.removeChild($(this).find("#note_pad"));
+        
+      } else {
+        var notes = $(this).find("#note_pad")[0];
+        console.log(notes.children[0]);
+        notes.style.display = 'block';
+        for (var i = 0; i < notes.childElementCount; i++) {
+          notes.children[i].style.display = 'block';
+        }
+        document.getElementById("annote_menu").style.width = "250px";
+        document.getElementById("article").style.marginRight = "250px";
+        annote_menu.appendChild(notes);
+      }
+      // openNav(); //.slideToggle();
+      console.log("the value of the annote_menu is now: "+$("#annote_menu").val());
+  };
   
 
   function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
@@ -305,9 +336,10 @@
   }
 
   function openNav() {
+    
     document.getElementById("annote_menu").style.width = "250px";
     document.getElementById("article").style.marginRight = "250px";
-    console.log(document.getElementById("annote_menu").value);
+    console.log("annote_menu value in openNav: "+document.getElementById("annote_menu").value);
   }
 
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
