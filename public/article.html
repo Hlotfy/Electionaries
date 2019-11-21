@@ -15,12 +15,12 @@
 
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-    #note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
-    #note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left;  }
+    .note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
+    .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;}
-    #blurb {padding: 5px; width: 100%;text-align: left;}
-    #blurb:hover {border: solid; border-width: thin;}
+    .blurb {padding: 5px; width: 100%;text-align: left;}
+    .blurb:hover {border: solid; border-width: thin;}
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
     #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
@@ -37,22 +37,22 @@
     #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
-    #annote_menu {
+    .annote_menu {
         background-color: whitesmoke;
         border: solid;
         border-width: thin;
-        position: fixed;
-        top:100px;
+        position: relative;
+        /* top:100px; */
         /* display: inline-block; */
-        right: 0;
-        height: 30%;
-        width: 0; 
-        margin-left: -280px;
+        /* right: 0; */
+        /* height: 30%; */
+        width: "0%"; 
+        /* margin-left: -280px; */
         font-size: 1em;
         font-weight: 700;
         overflow: auto;
         transition: .25s;
-        z-index: 50;
+        /* z-index: 50; */
     }
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
@@ -66,7 +66,7 @@
 </head>
 
 <body>
- <div id="annote_menu">
+ <div class="annote_menu">
     
       <table id = "annote_input">
         <tr>
@@ -232,15 +232,20 @@
                 snapshot.forEach(doc => {
                 
                     var blurb = document.createElement("button")
-                    blurb.setAttribute("id","blurb");
+                    blurb.setAttribute("class","blurb");
                     blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
                     var note_pad = document.createElement("div");
-                    note_pad.setAttribute('id','note_pad');
+                    
+                    // var annote_menu = document.getElementById("annote_menu");
+                    // console.log(annote_menu);
+                    note_pad.setAttribute('class','note_pad');
+                    note_pad.setAttribute("blurb-num",doc.data().num);
+                    // note_pad.appendChild(annote_menu);
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
-                        new_note.setAttribute("id","note");
+                        new_note.setAttribute("class","note");
                         var txt = document.createElement("h4");
                         txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
                         console.log(doc.data().text);
@@ -249,7 +254,7 @@
                         });
                         
                     });
-                    blurb.appendChild(note_pad);
+                    // blurb.appendChild(note_pad);
                     blurb.addEventListener("click",blurbClick);
                     // function() { 
                     //     // console.log("ANYTHING");
@@ -260,6 +265,7 @@
                     //     console.log($("#annote_menu").val());
                     // };
                     article.appendChild(blurb);
+                    article.appendChild(note_pad);
                     
                     
             });
@@ -268,42 +274,49 @@
       });
   }
 
-  function blurbClick() { 
-      var note = $(this).find("#note"); 
-      console.log("the value of this blurb is: "+this.value);
-      note.toggle(); 
-      var annote_menu = document.getElementById("annote_menu");
-      var article = document.getElementById("article");
-      $("#annote_menu").val(this.value);
-      // if (document.getElementById("annote_menu").style.width === "250px") {
-      //   document.getElementById("annote_menu").style.width = "0";
-      //   document.getElementById("article").style.marginRight = "50px";
-
-       
-        
-      // } else {
-        if (annote_menu.childElementCount > 1) {
-          annote_menu.removeChild(annote_menu.lastChild);
+  function blurbClick() {
+      // $(".note_pad").style.display = 'none'; 
+      var note_panels = document.getElementsByClassName("note_pad");
+      console.log(note_panels);
+      // note_panels.style.display = 'none';
+      for (var i = 0; i < note_panels.length; i++) {
+        note_panels[i].style.display = 'none';
         }
-        if ($(this).find("#note_pad")) {        
-          var notes = $(this).find("#note_pad")[0];
-          console.log(notes.childNodes[0]);
-          notes.style.display = 'block';
-          for (var i = 0; i < notes.childElementCount; i++) {
-            notes.children[i].style.display = 'block';
-          }
-          annote_menu.appendChild(notes);
+      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]"); 
+      console.log(note);
+      console.log("the value of this blurb is: "+this.value);
+      note[0].style.display = 'block'; 
+      var annote_menu = document.getElementsByClassName("annote_menu");
+      console.log(annote_menu);
+      note.prepend(annote_menu);
+      console.log(note.find(".annote_menu")); //.style.width = "100%";
+      var article = document.getElementById("article");
+      $(".annote_menu").val(this.value);
+      
+      // } else {
+        // if (annote_menu.childElementCount > 1) {
+        //   annote_menu.removeChild(annote_menu.lastChild);
+        // }
+        // if ($(this).find("#note_pad")) {        
+          // var notes = $(this).find("#note_pad")[0];
+          // console.log(notes.childNodes[0]);
+          // notes.style.display = 'block';
+          // for (var i = 0; i < notes.childElementCount; i++) {
+          //   notes.children[i].style.display = 'block';
+          // }
+          // annote_menu.appendChild(notes);
 
-      }
-        document.getElementById("annote_menu").style.width = "250px";
-        document.getElementById("article").style.marginRight = "250px";
+      // }
+        // document.getElementById("annote_menu").style.width = "250px";
+        // document.getElementById("article").style.marginRight = "250px";
       // }
       // openNav(); //.slideToggle();
-      console.log("the value of the annote_menu is now: "+$("#annote_menu").val());
+      console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
   };
   
 
   function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
+      console.log();
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
       d.setAttribute("id", "currentPost");
@@ -311,7 +324,7 @@
       var newPostObject = {
         article: article_id,
         author: "hlotfy", //firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
-        blurb: parseInt($("#annote_menu").val()),
+        blurb: parseInt($(".annote_menu").val()),
         civ_score: 5,
         created: currentDate, //Date.now(),
         text: postText
@@ -332,12 +345,10 @@
           console.error("Error writing document: ", error);
       });
       var new_note = document.createElement("div")
-      new_note.setAttribute("id","note");
-      new_note.appendChild(document.createTextNode(postText));
-      var menu_note_pad = $("[value="+parseInt($("#annote_menu").val())+"]").find("#note_pad");
-      console.log(menu_note_pad);
-      menu_note_pad.appendChild(new_note);
-      $("#annote_menu").find("#note_pad").appendChild(new_note);
+      new_note.setAttribute("class","note");
+      new_note.innerHTML = newPostObject["author"] +": <br />"+postText;
+   
+      $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
     }
 
     
