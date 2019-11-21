@@ -16,7 +16,7 @@
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
-    #note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left;  padding: 3px; margin: 8px;}
+    #note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left;  }
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;}
     #blurb {padding: 5px; width: 100%;text-align: left;}
@@ -275,22 +275,29 @@
       var annote_menu = document.getElementById("annote_menu");
       var article = document.getElementById("article");
       $("#annote_menu").val(this.value);
-      if (document.getElementById("annote_menu").style.width === "250px") {
-        document.getElementById("annote_menu").style.width = "0";
-        document.getElementById("article").style.marginRight = "50px";
-        annote_menu.removeChild($(this).find("#note_pad"));
+      // if (document.getElementById("annote_menu").style.width === "250px") {
+      //   document.getElementById("annote_menu").style.width = "0";
+      //   document.getElementById("article").style.marginRight = "50px";
+
+       
         
-      } else {
-        var notes = $(this).find("#note_pad")[0];
-        console.log(notes.children[0]);
-        notes.style.display = 'block';
-        for (var i = 0; i < notes.childElementCount; i++) {
-          notes.children[i].style.display = 'block';
+      // } else {
+        if (annote_menu.childElementCount > 1) {
+          annote_menu.removeChild(annote_menu.lastChild);
         }
+        if ($(this).find("#note_pad")) {        
+          var notes = $(this).find("#note_pad")[0];
+          console.log(notes.childNodes[0]);
+          notes.style.display = 'block';
+          for (var i = 0; i < notes.childElementCount; i++) {
+            notes.children[i].style.display = 'block';
+          }
+          annote_menu.appendChild(notes);
+
+      }
         document.getElementById("annote_menu").style.width = "250px";
         document.getElementById("article").style.marginRight = "250px";
-        annote_menu.appendChild(notes);
-      }
+      // }
       // openNav(); //.slideToggle();
       console.log("the value of the annote_menu is now: "+$("#annote_menu").val());
   };
@@ -324,7 +331,13 @@
       .catch(function(error) {
           console.error("Error writing document: ", error);
       });
-      document.getElementById("tempFeedDiv").appendChild(d);
+      var new_note = document.createElement("div")
+      new_note.setAttribute("id","note");
+      new_note.appendChild(document.createTextNode(postText));
+      var menu_note_pad = $("[value="+parseInt($("#annote_menu").val())+"]").find("#note_pad");
+      console.log(menu_note_pad);
+      menu_note_pad.appendChild(new_note);
+      $("#annote_menu").find("#note_pad").appendChild(new_note);
     }
 
     
