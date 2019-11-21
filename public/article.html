@@ -66,6 +66,7 @@
 </head>
 
 <body>
+  <div  style="display:none">
  <div class="annote_menu">
     
       <table id = "annote_input">
@@ -89,6 +90,7 @@
        
     </table>
     </div>
+  </div>
   
   <div id="article">
       <h2 id="art_title"></h2>
@@ -242,6 +244,7 @@
                     note_pad.setAttribute('class','note_pad');
                     note_pad.setAttribute("blurb-num",doc.data().num);
                     // note_pad.appendChild(annote_menu);
+                    var note_count = 0;
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
@@ -251,10 +254,15 @@
                         console.log(doc.data().text);
                         new_note.appendChild(txt);
                         note_pad.appendChild(new_note);
+                        note_count++;
                         });
                         
                     });
                     // blurb.appendChild(note_pad);
+                    var num_notes = document.createTextNode(String(note_count));
+                    // blurb.appendChild(document.createElement("br"));
+                    // blurb.appendChild(document.createElement("br"));
+                    blurb.appendChild(num_notes);
                     blurb.addEventListener("click",blurbClick);
                     // function() { 
                     //     // console.log("ANYTHING");
