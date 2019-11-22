@@ -19,7 +19,7 @@
     .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;}
-    .blurb {padding: 5px; width: 100%;text-align: left;}
+    .blurb {padding: 5px; width: 100%;text-align: left; font:15px arial, sans-serif;}
     .blurb:hover {border: solid; border-width: thin;}
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
@@ -42,16 +42,14 @@
         border: solid;
         border-width: thin;
         position: relative;
-        /* top:100px; */
-        /* display: inline-block; */
-        /* right: 0; */
-        /* height: 30%; */
-        width: "0%"; 
+        width: 100%; 
         /* margin-left: -280px; */
         font-size: 1em;
         font-weight: 700;
         overflow: auto;
-        transition: .25s;
+
+        display: flex;
+        align-items: center;
         /* z-index: 50; */
     }
     @media (max-width: 600px) {
@@ -70,14 +68,17 @@
     <div class="annote_menu">
     
       <table id = "annote_input">
+          <th>
+              Annotate A New Article!
+          </th>
         <tr>
           <td>
               <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           </td>
         </tr>
         <tr>
-            <td>
-                <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation" aria-label="Your annotation" aria-describedby="button-addon2">
+            <td >
+                <input style="width:90%;" type="text" id="annotationInput" class="form-control" placeholder="article url" aria-label="article url" aria-describedby="button-addon2">
             </td>
         </tr>
         <tr>
@@ -190,7 +191,6 @@ function getArticle() {
        var blurbs = stripHTML(text);
        var real_id = String(response['response']['content']['id']).split('/').toString();
        console.log(real_id);
-      //  var artId = "guardian_"+Math.random().toString().substring(2, 5);
        db.collection("articles").doc(real_id).set(newArticle);
        console.log("blurb list: "+blurbs);
        var cleanBlurbs = blurbs.filter(function(value, index, arr){
@@ -198,7 +198,6 @@ function getArticle() {
        });
        console.log("blurb list: "+cleanBlurbs);
        for (let i = 0; i < cleanBlurbs.length; i++) {
-        // if (blurbs[i].trim().replace(' ','')!='') {
             var blurbText = {"text": cleanBlurbs[i], "num": i+1};
             db.collection("articles").doc(real_id).collection('blurbs').doc(String(i+1)).set(blurbText) 
             .then(function() {
@@ -207,13 +206,7 @@ function getArticle() {
             .catch(function(error) {
                 console.error("Error writing document: ", error);
             });
-        //   linebreak = document.createElement("br");
-        //   newBlurb = document.createTextNode(cleanBlurbs[i]);
-          
-        //   allNewsArticlesFromApi.appendChild(newBlurb);
-        //   allNewsArticlesFromApi.appendChild(linebreak);
-        // }
-       
+
        }
        var art_link = document.createElement("a");
         // var art_title = document.createElement("h2");

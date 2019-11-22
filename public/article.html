@@ -18,8 +18,8 @@
     .note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
     .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
-    #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;}
-    .blurb {padding: 5px; width: 100%;text-align: left;}
+    #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;}
+    .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}    
     .blurb:hover {border: solid; border-width: thin;}
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
@@ -223,7 +223,7 @@
         var title = document.getElementById("art_title");
         title.innerHTML = doc.data().title;
         var details = document.getElementById("details");
-        details.innerHTML = doc.data().source + '</br>' + doc.data().link;
+        details.innerHTML = doc.data().source + '</br> <a href=' + doc.data().link + ">" + doc.data().link + "</a>";
 
         
         var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
@@ -235,7 +235,7 @@
                 
                     var blurb = document.createElement("button")
                     blurb.setAttribute("class","blurb");
-                    blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
+                    blurb.innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
                     var note_pad = document.createElement("div");
                     
@@ -244,36 +244,29 @@
                     note_pad.setAttribute('class','note_pad');
                     note_pad.setAttribute("blurb-num",doc.data().num);
                     // note_pad.appendChild(annote_menu);
-                    var note_count = 0;
+                    note_count = 0;
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
                         new_note.setAttribute("class","note");
                         var txt = document.createElement("h4");
                         txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
-                        console.log(doc.data().text);
+                        // console.log(doc.data().text);
                         new_note.appendChild(txt);
                         note_pad.appendChild(new_note);
                         note_count++;
+                        // console.log(note_count);
                         });
-                        
+                        // console.log(note_count);
                     });
-                    // blurb.appendChild(note_pad);
-                    var num_notes = document.createTextNode(String(note_count));
-                    // blurb.appendChild(document.createElement("br"));
-                    // blurb.appendChild(document.createElement("br"));
-                    blurb.appendChild(num_notes);
+                
+                    // blurb.innerHTML += '</br>' + note_pad.children.length;
+
                     blurb.addEventListener("click",blurbClick);
-                    // function() { 
-                    //     // console.log("ANYTHING");
-                    //     var note = $(this).find("#note"); 
-                    //     note.toggle(); 
-                    //     openNav(); //.slideToggle();
-                    //     $("#annote_menu").val(doc.data().num);
-                    //     console.log($("#annote_menu").val());
-                    // };
+                   
                     article.appendChild(blurb);
                     article.appendChild(note_pad);
+                    console.log($("[blurb-num="+doc.data().num+"]").children);
                     
                     
             });
@@ -297,28 +290,10 @@
       var annote_menu = document.getElementsByClassName("annote_menu");
       console.log(annote_menu);
       note.prepend(annote_menu);
-      console.log(note.find(".annote_menu")); //.style.width = "100%";
+      console.log(note.find(".annote_menu")); 
       var article = document.getElementById("article");
       $(".annote_menu").val(this.value);
       
-      // } else {
-        // if (annote_menu.childElementCount > 1) {
-        //   annote_menu.removeChild(annote_menu.lastChild);
-        // }
-        // if ($(this).find("#note_pad")) {        
-          // var notes = $(this).find("#note_pad")[0];
-          // console.log(notes.childNodes[0]);
-          // notes.style.display = 'block';
-          // for (var i = 0; i < notes.childElementCount; i++) {
-          //   notes.children[i].style.display = 'block';
-          // }
-          // annote_menu.appendChild(notes);
-
-      // }
-        // document.getElementById("annote_menu").style.width = "250px";
-        // document.getElementById("article").style.marginRight = "250px";
-      // }
-      // openNav(); //.slideToggle();
       console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
   };
   
@@ -379,98 +354,6 @@
     document.getElementById("annote_menu").style.width = "0";
     document.getElementById("article").style.marginRight = "50px";
   }
-
-
-    // fetch(url)
-    // .then(response=> response.json().then(function(response){
-
-    //    var allNewsArticlesFromApi = document.createElement('div');
-    //    console.log(response);
-    //    var newArticle = {
-    //     "added_by": "hlotfy",
-    //     "link": response['response']['content']['webUrl'],
-    //     "source": "Guardian",
-    //     "title": response['response']['content']['webTitle'],
-    //     "added_on": new Date(),
-    //    };
-    //    var text = response['response']['content']['fields']['body'];
-    //    var blurbs = stripHTML(text);
-    //    var artId = "guardian_"+Math.random().toString().substring(2, 5);
-    //    db.collection("articles").doc(artId).set(newArticle);
-    //    console.log("blurb list: "+blurbs);
-    //    var cleanBlurbs = blurbs.filter(function(value, index, arr){
-    //       return value.trim().replace(' ','')!='';
-    //    });
-    //    console.log("blurb list: "+cleanBlurbs);
-    //    for (let i = 0; i < cleanBlurbs.length; i++) {
-    //     // if (blurbs[i].trim().replace(' ','')!='') {
-    //         var blurbText = {"text": cleanBlurbs[i]};
-    //         db.collection("articles").doc(artId).collection('blurbs').doc(String(i+1)).set(blurbText) 
-    //         .then(function() {
-    //             console.log("Document successfully written!");
-    //         })
-    //         .catch(function(error) {
-    //             console.error("Error writing document: ", error);
-    //         });
-    //       linebreak = document.createElement("br");
-    //       newBlurb = document.createTextNode(cleanBlurbs[i]);
-    //       allNewsArticlesFromApi.appendChild(newBlurb);
-    //       allNewsArticlesFromApi.appendChild(linebreak);
-    //     // }
-    //    }
-    //   }));
-
-    //Print multiple blurbs
-    // var blurbsDiv = document.getElementById("blurbsDiv");
-    // var article_id = document.getElementById("article");
-    // db.collection("articles").get().then(snapshot => {
-    //   snapshot.forEach(doc => {
-    //     var art_id = doc.id;
-    //     var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
-    //       snapshot.forEach(doc => {
-    //         console.log(doc.data());
-    //       })
-    //     });
-
-        // var art = document.createElement("div");
-        // var art_title = document.createElement("h2");
-        // art_title.setAttribute("id","art_title");
-        // var art_text = document.createElement("div");
-        // art_title.innerHTML = doc.data().title;
-        // art.appendChild(art_title);
-
-//         db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
-
-//           snapshot.forEach(doc => {
-//             var blurb = document.createElement("div")
-//             blurb.setAttribute("id","blurb");
-//             blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
-
-//                 db.collection("annotations").where('article','==',art_id).where('blurb','==', parseInt(doc.id)).get().then(snapshot => {
-//                   snapshot.forEach(doc => {
-//                     console.log(doc.data());
-
-//                     var new_note = document.createElement("div");
-//                     new_note.setAttribute("id","note");
-//                     var txt = document.createElement("h4");
-//                     txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
-//                     console.log(doc.data().text);
-//                     new_note.appendChild(txt);
-//                     blurb.appendChild(new_note);
-//                   })
-//                   })
-//                 art_text.appendChild(blurb);
-
-//           // }
-//           })
-//           // art_text.innerHTML += "<hr> <hr>";
-//         })
-//         art.appendChild(art_text);
-//         blurbsDiv.appendChild(art);
-//         // blurbsDiv.appendChild(document.createElement("<hr>"));
-//     })
-
-//   });
 
 //////////////// function calls ////////////////
 loadArticle(article_id);
