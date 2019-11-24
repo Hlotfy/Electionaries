@@ -34,9 +34,9 @@
     #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
     #conn_list h2 { color:violet; font-weight: bold; }
     #message { background: white; margin: 10px; padding: 32px 24px; border-radius: 3px; }
-    #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-    #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-    #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+    /* #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; } */
+    /* #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;} */
+    #message p {  font-size: 14px; color:#57606f }
     #usersDiv {display: flex;}
     /* #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; } */
     /* #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); } */
@@ -47,6 +47,10 @@
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
     }
+    .gotoproflink {
+      font-size: 15px;
+    }
+    h2 {font-size: 1.5rem;}
     button {
       background-color: #f9ca24; /* Green */
       border: none;
@@ -82,6 +86,8 @@
     </a>
     <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
     <div id="userNameDisplay"></div>
+    <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
     <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
   </nav>
@@ -104,13 +110,12 @@
         <li>Paper draft (see below)</li>
       </ul>
     </div>
-    <hr>
     <div class="paper-container hidden">
       <embed src="files/Electionaries-SIGCHI-paper.pdf" type="application/pdf" width="100%" height="600px"/>
     </div>
     <div id="userNameDisplay"></div>
-    <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
-    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button>
+    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
     <h1 id="feedDivTitle" class="hidden">All Annotator Profiles</h2>
     <div class="hidden" id="activityFeed">
       <div id="composeDiv">
@@ -127,7 +132,7 @@
       <div id="tempFeedDiv"></div>
       <div id="feedDiv"></div>
     </div>
-    <hr>
+
     <div class="hidden">
       <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
       <div id="newsArticlesDiv">It shoud be here!</div>
@@ -143,12 +148,12 @@
       <img src="ps2_diagram.png" style="width:700px" class="hidden">
       <hr>
     </div>
-    <h1 id="blurbDivTitle">Top News</h2>
+    <h2 id="blurbDivTitle">Top News</h2>
     <div id="article">
     <h5 id="blurbsDiv"></h5>
     </div>
     <hr>
-    <h1 id="userDivTitle">All Annotator Profiles</h2>
+    <h2 id="userDivTitle">Annotator Network</h2>
     <h5 id="usersDiv"></h5>
     <hr>
     <h1 id="annotationsDivTitle" class="hidden">5 User-Generated Annotations (Posts) Printed Below:</h2>
@@ -337,15 +342,27 @@
         // console.log("current user is : " + doc.data().fullName + " (@" +doc.id+ ")");
         var profile_block = document.createElement("div");
         profile_block.setAttribute("id","profile");
+        profile_block.setAttribute("class","card");
         var profile_img = document.createElement('img');
         profile_img.src = doc.data().propic;
         profile_img.setAttribute("width", "50");
         profile_img.setAttribute("height", "50");
+        profile_img.setAttribute('style', 'border-radius: 50%; margin: 0px 0px 10px 0px;');
         profile_block.appendChild(profile_img);
-        profile_block.innerHTML += doc.data().fullName + " (@" +doc.data().email.split("@")[0]+ ") <br />";
+        var fullname = document.createElement("h5");
+        fullname.innerHTML = doc.data().fullName;
+        fullname.setAttribute('style', 'color: #1e272e');
+        var handle = document.createElement("h6");
+        handle.innerHTML = " (@" +doc.data().email.split("@")[0]+ ") <br />";
+        handle.setAttribute('style', 'color: #485460');
+        //profile_block.innerHTML += doc.data().fullName + " (@" +doc.data().email.split("@")[0]+ ") <br />";
+        profile_block.appendChild(fullname);
+        profile_block.appendChild(handle);
         var a = document.createElement('a');
         var linkText = document.createTextNode("Go to profile");
         a.appendChild(linkText);
+        a.setAttribute("class", "gotoproflink");
+        // a.style.fontSize = "12px";
       //  a.title = doc.data().fullName;
         a.href = "profile.html?id="+doc.data().id;
         profile_block.appendChild(a);
@@ -665,11 +682,13 @@
 //   </div>
 // </div>
         var d = document.createElement("div");
-        d.class = "card";
+        d.className = "card";
         d.style.width = "18rem";
-        d.style.background = "#f1f2f6";
+        d.style.background = 'whitesmoke';
         d.style.margin= "5px";
-        d.style.padding= "10px";
+        d.style.padding= "15px";
+        d.style.borderBottom= "6px solid black";
+        // d.style.borderColor = "#ced6e0!important";
         var art_id = doc.id;
         // var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
         //   snapshot.forEach(doc => {
@@ -683,6 +702,13 @@
         art_link.innerHTML = doc.data().title; //.appendChild(art_title);
         art_link.href = "article.html?id="+art_id; //https://electionaries.firebaseapp.com/
         art_link.class = "card-title";
+        art_link.style.color = "black";
+        art_link.style.fontWeight = "500";
+        art_link.style.fontSize = "20px";
+        art_link.style.lineHeight = "23px";
+        var source = document.createElement("p");
+        source.innerHTML = doc.data().source;
+        d.appendChild(source);
         d.appendChild(art_link);
         article.appendChild(d);
         // blurbsDiv.appendChild(article);
