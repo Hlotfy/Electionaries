@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Electionaries | My Profile</title>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
@@ -17,6 +20,7 @@
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
+    /* #container {padding: 20px;margin: 20px;} */
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
     #profile {border: solid; border-width: medium; background-color: lightgray;}
@@ -29,74 +33,130 @@
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
-      body { border-top: 16px solid #ffa100; }
+      body { border-top: 16px solid #ffa100;}
     }
-    button {
-      background-color: #f9ca24; /* Green */
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
+    #msg {display: inline; color: #ced6e0;}
+
+    .picDisplay {
+      /* display: inline-block; */
+      width: 110px;
+      height: 110px;
+      margin-right: 20px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
     }
   </style>
 </head>
 
 <body>
-  <!--PROFILE PAGE HERE. -->
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+    <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
+    Electionaries
+    </a>
+    <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
+    <div id="userNameDisplay">
+    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
+  </nav>
 
-  <div id="people-card">
-      <h2>My Profile</h2>
-      <div id="propic"></div>
-      <br>
-        Name: <span id="name"></span>
-      <p>
-        Civility Score:  <span id="civ_score"></span>
-      <hr>
-      <h2>Users I Follow</h2>
-      <div id="following_list"></div>
-      <!-- insert following/follow lists here -->
-      <h2>Users Who Follow Me</h2>
-      <div id="follower_list"></div>
-      <hr>
+  <!-- <div class="space"></div> -->
+  <div class="container" style="padding-top: 40px;">
+
+  <div class="row">
+      <div class="col-9">
+        <div id="people-card">
+            <h4>My Profile</h4>
+              <div class="container">
+            <div class="row">
+              <div class="col-3">
+              <div id="propic" class="user"></div>
+              </div>
+              <div class="col-9">
+                <br>
+                  <span id="name"></span> @<span id="userHandle"></span>
+                <p>
+                  Civility Score:  <span id="civ_score"></span>
+                <br>
+                  <div id="followUserDiv">
+                    <button id="follow-user-btn" onclick="followUser()" class="btn btn-primary" type="button">Follow</button>
+                  </div>
+              </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="profileBox">
+          <h4>About Me</h4>
+
+        </div>
+
+        <div id="allUserAnnotations">
+          <h4>Recent Annotations</h4>
+        </div>
+      </div>
+
+      <div id="followInfo" class="col-3">
+        <h4>Following</h4>
+        <div id="following_list"></div>
+        <!-- insert following/follow lists here -->
+        <h4>Followers</h4>
+        <div id="follower_list"></div>
+      </div>
+
   </div>
-  <h2>All Annotations I've Made</h2>
-  <div id="allUserAnnotations">
   </div>
 
   <!-- JAVASCRIPT TO ALLOW UPDATING A GIVEN UERS'S PROFILE PAGE HERE. -->
 
   <script>
 
+  var firebaseConfig = {
+    apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+    authDomain: "electionaries.firebaseapp.com",
+    databaseURL: "https://electionaries.firebaseio.com",
+    projectId: "electionaries",
+    storageBucket: "electionaries.appspot.com",
+    messagingSenderId: "509982773157",
+    appId: "1:509982773157:web:a775a480db86df3be0224c",
+    measurementId: "G-M6HQRQGYGK"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  var db = firebase.firestore();
+
   // Initilaize Firebase
 
     document.addEventListener('DOMContentLoaded', function() {
-      var firebaseConfig = {
-        apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
-        authDomain: "electionaries.firebaseapp.com",
-        databaseURL: "https://electionaries.firebaseio.com",
-        projectId: "electionaries",
-        storageBucket: "electionaries.appspot.com",
-        messagingSenderId: "509982773157",
-        appId: "1:509982773157:web:a775a480db86df3be0224c",
-        measurementId: "G-M6HQRQGYGK"
-      };
+      // var firebaseConfig = {
+      //   apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+      //   authDomain: "electionaries.firebaseapp.com",
+      //   databaseURL: "https://electionaries.firebaseio.com",
+      //   projectId: "electionaries",
+      //   storageBucket: "electionaries.appspot.com",
+      //   messagingSenderId: "509982773157",
+      //   appId: "1:509982773157:web:a775a480db86df3be0224c",
+      //   measurementId: "G-M6HQRQGYGK"
+      // };
       //firebase.auth().onAuthStateChanged(authStateObserver);
       console.log("hi, we got to profile page; getting the profile of user: " + window.location.search.split("=")[1]);
         var user_id = window.location.search.split("=")[1];
         // var user_full_name = db.collection("users").where ("id", "==", user_id);
       //  console.log("user_id is: " + user_id);
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
+        // firebase.initializeApp(firebaseConfig);
+        // var db = firebase.firestore();
         db.collection("users").doc(user_id).onSnapshot(function (doc) {
               var profile_img = document.createElement('img');
               profile_img.src = doc.data().propic;
-              profile_img.setAttribute("width", "100");
-              profile_img.setAttribute("height", "100");
+              profile_img.setAttribute("class", "picDisplay");
+
               propic.appendChild(profile_img);
              document.getElementById("name").innerHTML = doc.data().fullName;
+             document.getElementById("userHandle").innerHTML = doc.data().username;
              document.getElementById("civ_score").innerHTML = doc.data().civ_score;
 
             var following = document.getElementById("following_list");
@@ -115,20 +175,20 @@
                     following.appendChild(document.createElement("br"));
                     db.collection("users").doc(field).get().then(function(doc) { //) {
                       // querySnapshot.forEach(function(doc) {
-                            // if (doc.data().username === field) { 
+                            // if (doc.data().username === field) {
                                 var cora = document.getElementById(doc.data().id+"_flwing");
                                 console.log(doc.data());
                                 cora.href = "profile.html?id="+doc.id;
                                 var linkText = document.createTextNode(doc.data().username);
                                 cora.appendChild(linkText);
                                 // console.log(a.href);
-                                
+
                             // }
                           // });
                         });
                       }
-                      } 
-                    
+                      }
+
                 });
 
             var followers = document.getElementById("follower_list");
@@ -147,20 +207,20 @@
                     followers.appendChild(document.createElement("br"));
                     db.collection("users").doc(field).get().then(function(doc) { //) {
                       // querySnapshot.forEach(function(doc) {
-                            // if (doc.data().username === field) { 
+                            // if (doc.data().username === field) {
                                 var cora = document.getElementById(doc.data().id);
                                 console.log(doc.data());
                                 cora.href = "profile.html?id="+doc.id;
                                 var linkText = document.createTextNode(doc.data().username);
                                 cora.appendChild(linkText);
                                 // console.log(a.href);
-                                
+
                             // }
                           // });
                         });
                       }
-                      } 
-                    
+                      }
+
                 });
 
             var myAnnotationsDiv = document.getElementById("allUserAnnotations");
@@ -194,10 +254,64 @@
      }
       });
     });
+
+    function followUser() {
+      var follower_shirley = firebase.auth().currentUser.displayName;
+      var followee_hala = window.location.search.split("=")[1];
+      var shirley_id;
+      console.log("you are " + follower_shirley + ", and you're tryna follow: " + followee_hala);
+      var d = document.createElement('div');
+      d.setAttribute("id", "msg");
+      d.innerHTML =
+        ("Followed!");
+      //update DB for FOLLOWEE
+      // 1get ID of currentUser(follower) (followerID)
+      //2 update the followers/followee's field to add (followerID set to True)
+      // db.collection("users").doc(followee_hala).onSnapshot(function (doc) {
+      //   var followee_hala_username = doc.data().username;
+      //   console.log("you are trying to follow " + followee_hala + " and their username is: " + followee_hala_username);
+      //
+      //   db.collection("users").where ("fullName", "==", follower_shirley).get().then(function(querySnapshot) {
+      //       shirley_id = doc.data().id;
+      //       console.log("shirley_id is " + shirley_id);
+      //       db.collection("followers").doc(followee_hala_username).update({
+      //           shirley_id: true //2
+      //       });
+      //   })
+
+
+        // db.collection("followers").doc(followee_hala_username).update({
+        //     shirley_id: true //2
+        // });
+        // db.collection("users").where ("fullName", "==", follower).get().then(function(querySnapshot) {
+        //       var follower_id = doc.data().id; //1
+        //       console.log("your own id is " + follower_id);
+        //       db.collection("followers").doc(followee).get().then(function(doc) {
+        //           if (doc.exists) {
+        //               db.collection("followers").doc(followee_username).update({
+        //                   follower_id: true //2
+        //               })
+        //               .then(function() {
+        //                   console.log("Document successfully updated!");
+        //               })
+        //               .catch(function(error) {
+        //                   // The document probably doesn't exist.
+        //                   console.error("Error updating document: ", error);
+        //               });
+        //           }
+        //       })
+        // })
+    //  });
+      document.getElementById("followUserDiv").appendChild(d);
+    }
+
+
+
+
         // Code to Get Followering List
-        
-        
-    
+
+
+
         //
         // profile_conn.appendChild(following);
         // var followers = document.createElement("div");
@@ -226,7 +340,7 @@
         // profile_block.appendChild(profile_bod);
         //
 
-         
+
 
          //trying to get the user's Full Name to input into next function
          // db.collection("users").where ("id", "==", user_id)
@@ -238,7 +352,7 @@
          // });
 
          //Get all annotations of a given author Full Name
-    
+
 
 
   </script>
