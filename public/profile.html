@@ -3,7 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Welcome to Firebase Hosting</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Electionaries | My Profile</title>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
@@ -17,6 +20,7 @@
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
+    /* #container {padding: 20px;margin: 20px;} */
     #blurb {padding: 5px;}
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
     #profile {border: solid; border-width: medium; background-color: lightgray;}
@@ -29,74 +33,152 @@
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
-      body { border-top: 16px solid #ffa100; }
+      body { border-top: 16px solid #ffa100;}
     }
-    button {
-      background-color: #f9ca24; /* Green */
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
+    #msg {display: inline; color: #ced6e0;}
+    #followInfo {background-color: #f1f2f6;}
+    #grey {color: #8395a7;}
+    h6 {color: #1e272e;}
+    /* #followInfo {background:rgb(60,64,192); background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+      /* background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+    /* background {rgb(60,64,192);}
+    background {linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+
+    .picDisplay {
+      /* display: inline-block; */
+      width: 110px;
+      height: 110px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
     }
   </style>
 </head>
 
 <body>
-  <!--PROFILE PAGE HERE. -->
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="https://electionaries.firebaseapp.com/">
+    <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
+    Electionaries
+    </a>
+    <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
+    <div id="userNameDisplay">
+    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
+  </nav>
 
-  <div id="people-card">
-      <h2>My Profile</h2>
-      <div id="propic"></div>
-      <br>
-        Name: <span id="name"></span>
-      <p>
-        Civility Score:  <span id="civ_score"></span>
-      <hr>
-      <h2>Users I Follow</h2>
-      <div id="following_list"></div>
-      <!-- insert following/follow lists here -->
-      <h2>Users Who Follow Me</h2>
-      <div id="follower_list"></div>
-      <hr>
+  <!-- <div class="space"></div> -->
+  <div class="container" style="padding-top: 40px;">
+
+  <div class="row">
+      <div class="col-9">
+        <div id="people-card">
+            <h4>My Profile</h4>
+              <div class="container">
+            <div class="row">
+              <div class="col-3">
+              <div id="propic" class="user"></div>
+              </div>
+              <div class="col-9">
+                <br>
+                  <span id="name"></span> @<span id="userHandle"></span>
+                <p>
+                  Civility Score:  <span id="civ_score"></span>
+                <br>
+                  <div id="followUserDiv">
+                    <button id="follow-user-btn" onclick="followUser()" class="btn btn-primary" type="button">Follow</button>
+                  </div>
+              </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="profileBox">
+          <h4>About Me</h4>
+
+          <div id="theform">
+                  <!-- <div class="form-group">
+                                      <label id="grey">Help fellow annotators get to know you!</label>
+                                      <textarea id="userbioinput" class="form-control" rows="5" placeholder="My Bio"></textarea>
+                  </div>
+                  <div class="row">
+                      <div class="col d-flex justify-content-end">
+                        <button onclick="saveBioChanges()" class="btn btn-block btn-secondary" type="submit">Save Changes</button>
+                      </div>
+                    </div> -->
+          </div>
+          <div id="thefinishedbio"></div>
+        <hr>
+        </div>
+
+        <div id="allUserAnnotations">
+          <h4>Recent Annotations</h4>
+        </div>
+      </div>
+
+      <div id="followInfo" class="col-3 card">
+        <div class="card-body">
+            <h6>Following</h6>
+            <div id="following_list"></div>
+            <!-- insert following/follow lists here -->
+            <h6>Followers</h6>
+            <div id="follower_list"></div>
+      </div>
+      </div>
+
   </div>
-  <h2>All Annotations I've Made</h2>
-  <div id="allUserAnnotations">
   </div>
 
   <!-- JAVASCRIPT TO ALLOW UPDATING A GIVEN UERS'S PROFILE PAGE HERE. -->
 
   <script>
 
+  var firebaseConfig = {
+    apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+    authDomain: "electionaries.firebaseapp.com",
+    databaseURL: "https://electionaries.firebaseio.com",
+    projectId: "electionaries",
+    storageBucket: "electionaries.appspot.com",
+    messagingSenderId: "509982773157",
+    appId: "1:509982773157:web:a775a480db86df3be0224c",
+    measurementId: "G-M6HQRQGYGK"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  var db = firebase.firestore();
+
   // Initilaize Firebase
 
     document.addEventListener('DOMContentLoaded', function() {
-      var firebaseConfig = {
-        apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
-        authDomain: "electionaries.firebaseapp.com",
-        databaseURL: "https://electionaries.firebaseio.com",
-        projectId: "electionaries",
-        storageBucket: "electionaries.appspot.com",
-        messagingSenderId: "509982773157",
-        appId: "1:509982773157:web:a775a480db86df3be0224c",
-        measurementId: "G-M6HQRQGYGK"
-      };
-      //firebase.auth().onAuthStateChanged(authStateObserver);
+      // var firebaseConfig = {
+      //   apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+      //   authDomain: "electionaries.firebaseapp.com",
+      //   databaseURL: "https://electionaries.firebaseio.com",
+      //   projectId: "electionaries",
+      //   storageBucket: "electionaries.appspot.com",
+      //   messagingSenderId: "509982773157",
+      //   appId: "1:509982773157:web:a775a480db86df3be0224c",
+      //   measurementId: "G-M6HQRQGYGK"
+      // };
+      firebase.auth().onAuthStateChanged( function(user){
       console.log("hi, we got to profile page; getting the profile of user: " + window.location.search.split("=")[1]);
         var user_id = window.location.search.split("=")[1];
         // var user_full_name = db.collection("users").where ("id", "==", user_id);
       //  console.log("user_id is: " + user_id);
-        firebase.initializeApp(firebaseConfig);
-        var db = firebase.firestore();
+        // firebase.initializeApp(firebaseConfig);
+        // var db = firebase.firestore();
         db.collection("users").doc(user_id).onSnapshot(function (doc) {
               var profile_img = document.createElement('img');
               profile_img.src = doc.data().propic;
-              profile_img.setAttribute("width", "100");
-              profile_img.setAttribute("height", "100");
+              profile_img.setAttribute("class", "picDisplay");
+
               propic.appendChild(profile_img);
              document.getElementById("name").innerHTML = doc.data().fullName;
+             document.getElementById("userHandle").innerHTML = doc.data().username;
              document.getElementById("civ_score").innerHTML = doc.data().civ_score;
 
             var following = document.getElementById("following_list");
@@ -115,20 +197,20 @@
                     following.appendChild(document.createElement("br"));
                     db.collection("users").doc(field).get().then(function(doc) { //) {
                       // querySnapshot.forEach(function(doc) {
-                            // if (doc.data().username === field) { 
+                            // if (doc.data().username === field) {
                                 var cora = document.getElementById(doc.data().id+"_flwing");
                                 console.log(doc.data());
                                 cora.href = "profile.html?id="+doc.id;
                                 var linkText = document.createTextNode(doc.data().username);
                                 cora.appendChild(linkText);
                                 // console.log(a.href);
-                                
+
                             // }
                           // });
                         });
                       }
-                      } 
-                    
+                      }
+
                 });
 
             var followers = document.getElementById("follower_list");
@@ -147,20 +229,20 @@
                     followers.appendChild(document.createElement("br"));
                     db.collection("users").doc(field).get().then(function(doc) { //) {
                       // querySnapshot.forEach(function(doc) {
-                            // if (doc.data().username === field) { 
+                            // if (doc.data().username === field) {
                                 var cora = document.getElementById(doc.data().id);
                                 console.log(doc.data());
                                 cora.href = "profile.html?id="+doc.id;
                                 var linkText = document.createTextNode(doc.data().username);
                                 cora.appendChild(linkText);
                                 // console.log(a.href);
-                                
+
                             // }
                           // });
                         });
                       }
-                      } 
-                    
+                      }
+
                 });
 
             var myAnnotationsDiv = document.getElementById("allUserAnnotations");
@@ -193,11 +275,133 @@
          console.error(e);
      }
       });
+      console.log("HELLO");
+      console.log(firebase.auth().currentUser.displayName);
+      var fullusername = firebase.auth().currentUser.displayName;
+      var currentprofileid = window.location.search.split("=")[1];
+      db.collection("users").where("id", "==", currentprofileid).get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            console.log("doc.data().fullName is " + doc.data().fullName);
+            if (doc.data().fullName == fullusername) { //if current profile = currently logged in user, enable editing ability
+              var id = doc.data().id;
+              var bio = doc.data().bio;
+              console.log("doc.data().bio is " + doc.data().bio);
+              if (bio == "") { //if bio is empty
+                  console.log("bio is empty, allowing user to create");
+                var x = document.createElement("TEXTAREA");
+                x.setAttribute("type", "text");
+                x.setAttribute("id", "userbioinput");
+                x.setAttribute("class", "form-control");
+                x.setAttribute("placeholder", "My Bio");
+                x.setAttribute("rows", "5");
+                var y = document.createElement("BUTTON");
+                y.setAttribute("onclick","editInput();");
+                // y.setAttribute.onclick = function() { editInput(); };
+                y.setAttribute("type", "submit");
+                y.setAttribute("class", "btn btn-block btn-secondary");
+                y.innerHTML = "Save Changes";
+                document.getElementById("theform").appendChild(x);
+                document.getElementById("theform").appendChild(y);
+
+              } else {
+
+                console.log("bio already exists");
+                var bio = document.getElementById("thefinishedbio");
+                bio.innerHTML = doc.data().bio;
+              }
+            }
+            // db.collection("users").doc(id).update({
+            //     bio: bioinput,
+            // });
+          });
+      });
+      });
     });
+
+    function editInput() {
+      firebase.auth().onAuthStateChanged( function(user){
+        var fullusername = firebase.auth().currentUser.displayName;
+      console.log("called");
+
+      var bioinput = document.getElementById("userbioinput").value;
+      console.log("editinput() says bioinput is" + bioinput);
+
+      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            console.log("editinput() says id is : " + doc.data().id);
+            var id = doc.data().id;
+            db.collection("users").doc(id).update({
+                bio: bioinput,
+            });
+          });
+      });
+
+      setTimeout(function(){
+         window.location.reload();
+       }, 400);
+
+     })
+
+   };
+
+
+    function followUser() {
+      var follower_shirley = firebase.auth().currentUser.displayName;
+      var followee_hala = window.location.search.split("=")[1];
+      // var shirley_id;
+      console.log("you are " + follower_shirley + ", and you're tryna follow: " + followee_hala);
+      var d = document.createElement('div');
+      d.setAttribute("id", "msg");
+      d.innerHTML =
+        ("Followed!");
+      // update DB for FOLLOWEE
+      // 1get ID of currentUser(follower) (followerID)
+      // 2 update the followers/followee's field to add (followerID set to True)
+      //3 add to following for follwee
+      db.collection("users").doc(followee_hala).onSnapshot(function (doc) {
+        var followee_hala_username = doc.data().username;
+        console.log("you are trying to follow " + followee_hala + " and their username is: " + followee_hala_username);
+
+        db.collection("users").where("fullName", "==", follower_shirley).get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                var shirley_id = doc.data().id;
+                var shirley_username = doc.data().username;
+                console.log("shirley_id is " + shirley_id);
+                db.collection("followers").doc(followee_hala_username).update({
+                    [shirley_id]: true //2
+                });
+                db.collection("following").doc(shirley_username).update({
+                    [followee_hala]: true //2
+                });
+            });
+
+        })
+     });
+      document.getElementById("followUserDiv").appendChild(d);
+    };
+
+    // function saveBioChanges() {
+    //   var bioinput = document.getElementById("userbioinput").value;
+    //   document.getElementById("theform").style.display = "none";
+    //   var bio = document.getElementById("thefinishedbio");
+    //   bio.innerHTML = bioinput;
+    //
+    //   var fullusername = firebase.auth().currentUser.displayName;
+    //   db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
+    //       querySnapshot.forEach(function(doc) {
+    //         var id = doc.data().id;
+    //         db.collection("users").doc(id).update({
+    //             bio: bioinput,
+    //         });
+    //       });
+    //   });
+    // }
+
+
         // Code to Get Followering List
-        
-        
-    
+
+
+
         //
         // profile_conn.appendChild(following);
         // var followers = document.createElement("div");
@@ -226,7 +430,7 @@
         // profile_block.appendChild(profile_bod);
         //
 
-         
+
 
          //trying to get the user's Full Name to input into next function
          // db.collection("users").where ("id", "==", user_id)
@@ -238,7 +442,7 @@
          // });
 
          //Get all annotations of a given author Full Name
-    
+
 
 
   </script>

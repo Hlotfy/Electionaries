@@ -21,6 +21,8 @@ exports.setupUsers = functions.auth.user().onCreate(async (user) => {
     civ_score: 5,
     propic: user.photoURL,
     id: user.uid
+    // ,
+    // bio: ""
   });
 });
 
