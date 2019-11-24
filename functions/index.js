@@ -20,7 +20,8 @@ exports.setupUsers = functions.auth.user().onCreate(async (user) => {
     email: user.email,
     civ_score: 5,
     propic: user.photoURL,
-    id: user.uid,
-    bio: ""
+    id: user.uid
+    // ,
+    // bio: ""
   });
 });

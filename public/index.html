@@ -42,7 +42,8 @@
     /* #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); } */
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
-    @media (max-width: 600px) {
+    @media only screen and (max-width: 600px) {
+    /* @media (max-width: 600px) { */
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
     }
@@ -80,7 +81,7 @@
     Electionaries
     </a>
     <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
-    <div id="userNameDisplay">
+    <div id="userNameDisplay"></div>
     <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
   </nav>
@@ -289,23 +290,31 @@
             document.getElementById("sign-out").style.display = "block";
             console.log("user is signed in; they are:" + firebase.auth().currentUser.displayName);
 
-            // document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
-            var a = document.createElement('a');
-            var linkText = document.createTextNode(firebase.auth().currentUser.displayName);
-            a.appendChild(linkText);
-          //  a.title = doc.data().fullName;
-            a.href = "profile.html?id=llrJ5oIPLbRW0TB0rq4w29vtuoS2";
-            document.getElementById("userNameDisplay").appendChild(a);
-            // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
-            // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
-            var userImg = document.createElement('img');
-            console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
-            userImg.src = firebase.auth().currentUser.photoURL;
-            userImg.setAttribute("width", "50");
-            userImg.setAttribute("height", "50");
-            userImg.setAttribute('style', 'border-radius: 50%;');
-            document.getElementById("userNameDisplay").appendChild(userImg);
-            console.log("img appended");
+            db.collection("users").where("fullName", "==", firebase.auth().currentUser.displayName).get().then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                  console.log("doc.data().id is " + doc.data().id);
+
+
+                  // document.getElementById("userNameDisplay").innerHTML = firebase.auth().currentUser.displayName;
+                  var a = document.createElement('a');
+                  var linkText = document.createTextNode(firebase.auth().currentUser.displayName);
+                  a.appendChild(linkText);
+                //  a.title = doc.data().fullName;
+
+                  a.href = "profile.html?id="+doc.data().id;
+                  document.getElementById("userNameDisplay").appendChild(a);
+                  // document.getElementById("userNameDisplay").href = 'profile.html?id="+doc.id+"';
+                  // <a href='profile.html?id="+doc.id+"'>" + doc.data().name +"</a>
+                  var userImg = document.createElement('img');
+                  console.log("img div created, now linking it to src: " + firebase.auth().currentUser.photoURL);
+                  userImg.src = firebase.auth().currentUser.photoURL;
+                  userImg.setAttribute("width", "50");
+                  userImg.setAttribute("height", "50");
+                  userImg.setAttribute('style', 'border-radius: 50%;');
+                  document.getElementById("userNameDisplay").appendChild(userImg);
+                  console.log("img appended");
+              })
+          });
         } else { // User is signed out!
             document.getElementById("sign-in").style.display = "block";
             document.getElementById("sign-out").style.display = "none";
