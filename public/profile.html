@@ -36,12 +36,19 @@
       body { border-top: 16px solid #ffa100;}
     }
     #msg {display: inline; color: #ced6e0;}
+    #followInfo {background-color: #f1f2f6;}
+    #grey {color: #8395a7;}
+    h6 {color: #1e272e;}
+    /* #followInfo {background:rgb(60,64,192); background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+      /* background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+    /* background {rgb(60,64,192);}
+    background {linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
 
     .picDisplay {
       /* display: inline-block; */
       width: 110px;
       height: 110px;
-      margin-right: 20px;
+      margin-top: 20px;
       margin-bottom: 20px;
       border-radius: 50%;
       background-repeat: no-repeat;
@@ -53,7 +60,7 @@
 
 <body>
   <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="https://electionaries.firebaseapp.com/">
     <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
     Electionaries
     </a>
@@ -92,6 +99,19 @@
         <div id="profileBox">
           <h4>About Me</h4>
 
+          <div id="theform">
+                  <!-- <div class="form-group">
+                                      <label id="grey">Help fellow annotators get to know you!</label>
+                                      <textarea id="userbioinput" class="form-control" rows="5" placeholder="My Bio"></textarea>
+                  </div>
+                  <div class="row">
+                      <div class="col d-flex justify-content-end">
+                        <button onclick="saveBioChanges()" class="btn btn-block btn-secondary" type="submit">Save Changes</button>
+                      </div>
+                    </div> -->
+          </div>
+          <div id="thefinishedbio"></div>
+        <hr>
         </div>
 
         <div id="allUserAnnotations">
@@ -99,12 +119,14 @@
         </div>
       </div>
 
-      <div id="followInfo" class="col-3">
-        <h4>Following</h4>
-        <div id="following_list"></div>
-        <!-- insert following/follow lists here -->
-        <h4>Followers</h4>
-        <div id="follower_list"></div>
+      <div id="followInfo" class="col-3 card">
+        <div class="card-body">
+            <h6>Following</h6>
+            <div id="following_list"></div>
+            <!-- insert following/follow lists here -->
+            <h6>Followers</h6>
+            <div id="follower_list"></div>
+      </div>
       </div>
 
   </div>
@@ -253,7 +275,62 @@
          console.error(e);
      }
       });
+
+
+      //var fullusername = firebase.auth().currentUser.displayName;
+      db.collection("users").where("fullName", "==", "Shirley Lei").get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            var id = doc.data().id;
+            var bio = doc.data().bio;
+            if (bio == "") { //if bio is empty
+                console.log("bio is empty, allowing user to create");
+              var x = document.createElement("TEXTAREA");
+              x.setAttribute("type", "text");
+              x.setAttribute("id", "userbioinput");
+              x.setAttribute("class", "form-control");
+              x.setAttribute("placeholder", "My Bio");
+              x.setAttribute("rows", "5");
+              var y = document.createElement("BUTTON");
+              y.setAttribute("onclick","editInput();");
+              // y.setAttribute.onclick = function() { editInput(); };
+              y.setAttribute("type", "submit");
+              y.setAttribute("class", "btn btn-block btn-secondary");
+              y.innerHTML = "Save Changes";
+              document.getElementById("theform").appendChild(x);
+              document.getElementById("theform").appendChild(y);
+
+            } else {
+
+              console.log("bio already exists");
+              var bio = document.getElementById("thefinishedbio");
+              bio.innerHTML = doc.data().bio;
+            }
+            // db.collection("users").doc(id).update({
+            //     bio: bioinput,
+            // });
+          });
+      });
     });
+
+    function editInput() {
+      console.log("called");
+
+      var bioinput = document.getElementById("userbioinput").value;
+      console.log("editinput() says bioinput is" + bioinput);
+      db.collection("users").where("fullName", "==", "Shirley Lei").get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            console.log("editinput() says id is : " + doc.data().id);
+            var id = doc.data().id;
+            db.collection("users").doc(id).update({
+                bio: bioinput,
+            });
+          });
+      });
+      setTimeout(function(){
+         window.location.reload();
+       }, 400);
+
+    }
 
     function followUser() {
       var follower_shirley = firebase.auth().currentUser.displayName;
@@ -290,7 +367,22 @@
       document.getElementById("followUserDiv").appendChild(d);
     };
 
+    function saveBioChanges() {
+      var bioinput = document.getElementById("userbioinput").value;
+      document.getElementById("theform").style.display = "none";
+      var bio = document.getElementById("thefinishedbio");
+      bio.innerHTML = bioinput;
 
+      var fullusername = firebase.auth().currentUser.displayName;
+      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            var id = doc.data().id;
+            db.collection("users").doc(id).update({
+                bio: bioinput,
+            });
+          });
+      });
+    }
 
 
         // Code to Get Followering List
