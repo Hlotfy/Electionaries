@@ -278,32 +278,37 @@
       console.log("HELLO");
       console.log(firebase.auth().currentUser.displayName);
       var fullusername = firebase.auth().currentUser.displayName;
-      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
+      var currentprofileid = window.location.search.split("=")[1];
+      db.collection("users").where("id", "==", currentprofileid).get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
-            var id = doc.data().id;
-            var bio = doc.data().bio;
-            if (bio == "") { //if bio is empty
-                console.log("bio is empty, allowing user to create");
-              var x = document.createElement("TEXTAREA");
-              x.setAttribute("type", "text");
-              x.setAttribute("id", "userbioinput");
-              x.setAttribute("class", "form-control");
-              x.setAttribute("placeholder", "My Bio");
-              x.setAttribute("rows", "5");
-              var y = document.createElement("BUTTON");
-              y.setAttribute("onclick","editInput();");
-              // y.setAttribute.onclick = function() { editInput(); };
-              y.setAttribute("type", "submit");
-              y.setAttribute("class", "btn btn-block btn-secondary");
-              y.innerHTML = "Save Changes";
-              document.getElementById("theform").appendChild(x);
-              document.getElementById("theform").appendChild(y);
+            console.log("doc.data().fullName is " + doc.data().fullName);
+            if (doc.data().fullName == fullusername) { //if current profile = currently logged in user, enable editing ability
+              var id = doc.data().id;
+              var bio = doc.data().bio;
+              console.log("doc.data().bio is " + doc.data().bio);
+              if (bio == "") { //if bio is empty
+                  console.log("bio is empty, allowing user to create");
+                var x = document.createElement("TEXTAREA");
+                x.setAttribute("type", "text");
+                x.setAttribute("id", "userbioinput");
+                x.setAttribute("class", "form-control");
+                x.setAttribute("placeholder", "My Bio");
+                x.setAttribute("rows", "5");
+                var y = document.createElement("BUTTON");
+                y.setAttribute("onclick","editInput();");
+                // y.setAttribute.onclick = function() { editInput(); };
+                y.setAttribute("type", "submit");
+                y.setAttribute("class", "btn btn-block btn-secondary");
+                y.innerHTML = "Save Changes";
+                document.getElementById("theform").appendChild(x);
+                document.getElementById("theform").appendChild(y);
 
-            } else {
+              } else {
 
-              console.log("bio already exists");
-              var bio = document.getElementById("thefinishedbio");
-              bio.innerHTML = doc.data().bio;
+                console.log("bio already exists");
+                var bio = document.getElementById("thefinishedbio");
+                bio.innerHTML = doc.data().bio;
+              }
             }
             // db.collection("users").doc(id).update({
             //     bio: bioinput,
