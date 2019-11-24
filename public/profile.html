@@ -258,52 +258,37 @@
     function followUser() {
       var follower_shirley = firebase.auth().currentUser.displayName;
       var followee_hala = window.location.search.split("=")[1];
-      var shirley_id;
+      // var shirley_id;
       console.log("you are " + follower_shirley + ", and you're tryna follow: " + followee_hala);
       var d = document.createElement('div');
       d.setAttribute("id", "msg");
       d.innerHTML =
         ("Followed!");
-      //update DB for FOLLOWEE
+      // update DB for FOLLOWEE
       // 1get ID of currentUser(follower) (followerID)
-      //2 update the followers/followee's field to add (followerID set to True)
-      // db.collection("users").doc(followee_hala).onSnapshot(function (doc) {
-      //   var followee_hala_username = doc.data().username;
-      //   console.log("you are trying to follow " + followee_hala + " and their username is: " + followee_hala_username);
-      //
-      //   db.collection("users").where ("fullName", "==", follower_shirley).get().then(function(querySnapshot) {
-      //       shirley_id = doc.data().id;
-      //       console.log("shirley_id is " + shirley_id);
-      //       db.collection("followers").doc(followee_hala_username).update({
-      //           shirley_id: true //2
-      //       });
-      //   })
+      // 2 update the followers/followee's field to add (followerID set to True)
+      //3 add to following for follwee
+      db.collection("users").doc(followee_hala).onSnapshot(function (doc) {
+        var followee_hala_username = doc.data().username;
+        console.log("you are trying to follow " + followee_hala + " and their username is: " + followee_hala_username);
 
+        db.collection("users").where("fullName", "==", follower_shirley).get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                var shirley_id = doc.data().id;
+                var shirley_username = doc.data().username;
+                console.log("shirley_id is " + shirley_id);
+                db.collection("followers").doc(followee_hala_username).update({
+                    [shirley_id]: true //2
+                });
+                db.collection("following").doc(shirley_username).update({
+                    [followee_hala]: true //2
+                });
+            });
 
-        // db.collection("followers").doc(followee_hala_username).update({
-        //     shirley_id: true //2
-        // });
-        // db.collection("users").where ("fullName", "==", follower).get().then(function(querySnapshot) {
-        //       var follower_id = doc.data().id; //1
-        //       console.log("your own id is " + follower_id);
-        //       db.collection("followers").doc(followee).get().then(function(doc) {
-        //           if (doc.exists) {
-        //               db.collection("followers").doc(followee_username).update({
-        //                   follower_id: true //2
-        //               })
-        //               .then(function() {
-        //                   console.log("Document successfully updated!");
-        //               })
-        //               .catch(function(error) {
-        //                   // The document probably doesn't exist.
-        //                   console.error("Error updating document: ", error);
-        //               });
-        //           }
-        //       })
-        // })
-    //  });
+        })
+     });
       document.getElementById("followUserDiv").appendChild(d);
-    }
+    };
 
 
 
