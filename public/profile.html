@@ -164,7 +164,7 @@
       //   appId: "1:509982773157:web:a775a480db86df3be0224c",
       //   measurementId: "G-M6HQRQGYGK"
       // };
-      //firebase.auth().onAuthStateChanged(authStateObserver);
+      firebase.auth().onAuthStateChanged( function(user){
       console.log("hi, we got to profile page; getting the profile of user: " + window.location.search.split("=")[1]);
         var user_id = window.location.search.split("=")[1];
         // var user_full_name = db.collection("users").where ("id", "==", user_id);
@@ -275,10 +275,10 @@
          console.error(e);
      }
       });
-
-
-      //var fullusername = firebase.auth().currentUser.displayName;
-      db.collection("users").where("fullName", "==", "Shirley Lei").get().then(function(querySnapshot) {
+      console.log("HELLO");
+      console.log(firebase.auth().currentUser.displayName);
+      var fullusername = firebase.auth().currentUser.displayName;
+      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
             var id = doc.data().id;
             var bio = doc.data().bio;
@@ -310,14 +310,18 @@
             // });
           });
       });
+      });
     });
 
     function editInput() {
+      firebase.auth().onAuthStateChanged( function(user){
+        var fullusername = firebase.auth().currentUser.displayName;
       console.log("called");
 
       var bioinput = document.getElementById("userbioinput").value;
       console.log("editinput() says bioinput is" + bioinput);
-      db.collection("users").where("fullName", "==", "Shirley Lei").get().then(function(querySnapshot) {
+
+      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
             console.log("editinput() says id is : " + doc.data().id);
             var id = doc.data().id;
@@ -326,11 +330,15 @@
             });
           });
       });
+
       setTimeout(function(){
          window.location.reload();
        }, 400);
 
-    }
+     })
+
+   };
+
 
     function followUser() {
       var follower_shirley = firebase.auth().currentUser.displayName;
@@ -367,22 +375,22 @@
       document.getElementById("followUserDiv").appendChild(d);
     };
 
-    function saveBioChanges() {
-      var bioinput = document.getElementById("userbioinput").value;
-      document.getElementById("theform").style.display = "none";
-      var bio = document.getElementById("thefinishedbio");
-      bio.innerHTML = bioinput;
-
-      var fullusername = firebase.auth().currentUser.displayName;
-      db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
-          querySnapshot.forEach(function(doc) {
-            var id = doc.data().id;
-            db.collection("users").doc(id).update({
-                bio: bioinput,
-            });
-          });
-      });
-    }
+    // function saveBioChanges() {
+    //   var bioinput = document.getElementById("userbioinput").value;
+    //   document.getElementById("theform").style.display = "none";
+    //   var bio = document.getElementById("thefinishedbio");
+    //   bio.innerHTML = bioinput;
+    //
+    //   var fullusername = firebase.auth().currentUser.displayName;
+    //   db.collection("users").where("fullName", "==", fullusername).get().then(function(querySnapshot) {
+    //       querySnapshot.forEach(function(doc) {
+    //         var id = doc.data().id;
+    //         db.collection("users").doc(id).update({
+    //             bio: bioinput,
+    //         });
+    //       });
+    //   });
+    // }
 
 
         // Code to Get Followering List

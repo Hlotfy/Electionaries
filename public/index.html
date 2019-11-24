@@ -59,6 +59,17 @@
     .hidden {
       display: none;
     }
+    .picDisplay {
+      /* display: inline-block; */
+      width: 110px;
+      height: 110px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+    }
   </style>
 </head>
 
@@ -292,6 +303,7 @@
             userImg.src = firebase.auth().currentUser.photoURL;
             userImg.setAttribute("width", "50");
             userImg.setAttribute("height", "50");
+            userImg.setAttribute('style', 'border-radius: 50%;');
             document.getElementById("userNameDisplay").appendChild(userImg);
             console.log("img appended");
         } else { // User is signed out!
