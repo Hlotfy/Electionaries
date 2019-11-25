@@ -16,12 +16,15 @@
   <style media="screen">
   body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
 
-    .note {     background-color: #ced6e0;
+    .note {     background-color: #dfe4ea;
     /* text-align: left; */
     padding: 8px;
     margin: 8px;}
-    .note_pad { border-width: thin; background-color:whitesmoke; text-align: left; display:none;}
-    #article {padding: 40px; border-width: thin; margin: 50px; background-color: snow;}
+    .note_pad { border-width: thin; background-color:whitesmoke; text-align: left; display:none; margin: 20px;}
+    #article {    padding: 50px 50px 50px 50px;
+    border-width: thin;
+    margin: 100px 250px 100px 250px;
+    background-color: snow;}
     /* #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;} */
     .blurb {padding: 5px; width: 100%;text-align: left; border-left: 6px solid #ccc!important; border-color: #ced6e0!important; background-color: #f1f2f6!important;}
     .blurb:hover { border-width: thin; border-color: #474787!important; transition: 0.5s; }
@@ -41,27 +44,51 @@
     #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
+    #nameofpoast{    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    }
+    #actualpost {margin-bottom: 0px;}
+
+
+    .btnx{
+      margin: 5px;
+    }
     .annote_menu {
-        background-color: whitesmoke;
-        /* border: solid; */
-        border-width: thin;
-        position: relative;
-        /* top:100px; */
-        /* display: inline-block; */
-        /* right: 0; */
-        /* height: 30%; */
-        width: "0%";
-        /* margin-left: -280px; */
-        font-size: 1em;
-        font-weight: 700;
-        overflow: auto;
-        transition: .25s;
+      background-color: #dfe4ea;
+  /* border: solid; */
+  border-width: thin;
+  position: relative;
+  /* top: 100px; */
+  /* display: inline-block; */
+  /* right: 0; */
+  /* height: 30%; */
+  width: "0%";
+  /* margin-left: -280px; */
+  font-size: 1em;
+  font-weight: 700;
+  overflow: auto;
+  transition: .25s;
+  padding: 30px;
+  border-radius: .25rem;
+
+      border: solid;
+      border-color: #3B3B98;
+
+  /* z-index: 50;
         /* z-index: 50; */
     }
     h3 {    font-size: 1.0rem;
     font-weight: 400;}
     h4 {    font-size: 0.95rem;
     font-weight: 350;}
+    #tsml {font-size: 0.75rem;
+    font-weight: 400;
+    color: grey;
+    margin-bottom: 3px;
+
+
+    }
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
@@ -93,20 +120,22 @@
  <div class="annote_menu">
 
       <table id = "annote_input">
-        <tr>
+        <!-- <tr>
           <td>
-              <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+              <button class="btn btn-light" onclick="closeNav()">&times;</button>
           </td>
-        </tr>
+        </tr> -->
         <tr>
             <td>
-                <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation" aria-label="Your annotation" aria-describedby="button-addon2">
+                <h6>Have thoughts on this? Add to the conversation.</h6>
+                <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation..." aria-label="Your annotation..." aria-describedby="button-addon2">
             </td>
         </tr>
         <tr>
             <td>
                 <div class="input-group-append">
-                    <button id="post-btn" onclick="publishPostToDB()" class="btn btn-primary" type="button" id="button-addon2">Post!</button>
+                    <button id="post-btn" onclick="publishPostToDB()" class="btn btn-dark btnx" type="button" id="button-addon2">Post!</button>
+                    <button class="btn btn-outline-secondary btnx" onclick="closeNav()">Close</button>
                 </div>
             </td>
         </tr>
@@ -189,12 +218,16 @@
                     a.href = "https://electionaries.firebaseapp.com/profile.html?id="+userID;
                     var searchResultDiv = document.getElementById("searchResultMessageDiv");
                     searchResultDiv.appendChild(a);
+                    console.log("srch value is : " + document.getElementById('userSearchInput').value);
                 });
+                console.log("2srch value is : " + document.getElementById('userSearchInput').value);
               } else { //user is NOT found in DB -> display err msg //minor TODO add CSS to make error message display flash to indicate each time it's called
                   console.log("u tried to find" + searchUser + " but that user DNE!");
                   var errDiv = document.getElementById("searchResultMessageDiv");
                   errDiv.innerHTML = ("The user you're looking for doesn't exist on our network!");
+                  console.log("3srch value is : " + document.getElementById('userSearchInput').value);
               }
+                console.log("4srch value is : " + document.getElementById('userSearchInput').value);
         })
         .catch(function(error) {
             console.log("Error getting documents: ", error);
@@ -236,6 +269,12 @@
   }
 
 //   getArticle(url);
+  function closeNav() {
+    console.log("CALLED CLOS NAV");
+    var padd = document.getElementsByClassName("note_pad")[0];
+    console.log(padd);
+    padd.style.display = 'none';
+  }
 
   function loadArticle(id) {
       db.collection("articles").doc(id).get().then(function(doc) {
@@ -256,7 +295,7 @@
             article_blurbs.orderBy("num").get().then(snapshot => {
                 snapshot.forEach(doc => {
 
-                    var blurb = document.createElement("button")
+                    var blurb = document.createElement("button");
                     blurb.setAttribute("class","blurb");
                     blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
@@ -265,6 +304,7 @@
                     // var annote_menu = document.getElementById("annote_menu");
                     // console.log(annote_menu);
                     note_pad.setAttribute('class','note_pad');
+                    note_pad.setAttribute('id','notepad');
                     // note_pad.setAttribute('class','card');
                     note_pad.setAttribute("blurb-num",doc.data().num);
                     // note_pad.appendChild(annote_menu);
@@ -273,10 +313,34 @@
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
                         new_note.setAttribute("class","note");
-                        var txt = document.createElement("h4");
-                        txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
+
+                        var name = document.createElement("p");
+                        name.innerHTML = doc.data().author +"<br /> "
+                        name.setAttribute("id", "actualpost");
+
+                        // var db_date = doc.data().created;
+                        // // Hours part from the timestamp
+                        // var hours = db_date.getHours();
+                        // // Minutes part from the timestamp
+                        // var minutes = "0" + db_date.getMinutes();
+                        // // Seconds part from the timestamp
+                        // var seconds = "0" + db_date.getSeconds();
+                        //
+                        // // Will display time in 10:30:23 format
+                        // var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+
+                        var txt = document.createElement("p");
+                        txt.setAttribute("id", "tsml");
+                        // newPostObject["author"] + "<br /> (Civility Score:" + newPostObject["civ_score"] + ") <br />" + newPostObject["created"] + " <br />" + postText;
+                        txt.innerHTML = "Civility Score:"+doc.data().civ_score + "<br />" + doc.data().created + " <br />"
+
+                        var post= document.createElement("p");
+                        post.setAttribute("id", "nameofpoast");
+                        post.innerHTML = doc.data().text;
                         // console.log(doc.data().text);
+                        new_note.appendChild(name);
                         new_note.appendChild(txt);
+                        new_note.appendChild(post);
                         note_pad.appendChild(new_note);
                         note_count++;
                         // console.log(note_count);
@@ -290,6 +354,11 @@
 
                     article.appendChild(blurb);
                     article.appendChild(note_pad);
+                    console.log("HELLO");
+                    var pad_num_childs = document.getElementById("notepad").childElementCount;
+                    console.log("NUM CHILDREN NOTEPAD HAS IS" + pad_num_childs);
+                    console.log(note_pad.childElementCount);
+
                     console.log($("[blurb-num="+doc.data().num+"]").children);
 
 
@@ -300,6 +369,9 @@
   }
 
   function blurbClick() {
+    var padd = document.getElementsByClassName("note_pad")[0];
+    console.log(padd);
+    padd.style.display = 'block';
       // $(".note_pad").style.display = 'none';
       var note_panels = document.getElementsByClassName("note_pad");
       console.log(note_panels);
@@ -323,6 +395,7 @@
 
 
   function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
+    firebase.auth().onAuthStateChanged( function(user){
       console.log();
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
@@ -330,7 +403,7 @@
       var currentDate = new Date();
       var newPostObject = {
         article: article_id,
-        author: "hlotfy", //firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        author: firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
         blurb: parseInt($(".annote_menu").val()),
         civ_score: 5,
         created: currentDate, //Date.now(),
@@ -353,10 +426,18 @@
       });
       var new_note = document.createElement("div")
       new_note.setAttribute("class","note");
-      new_note.innerHTML = newPostObject["author"] +": <br />"+postText;
+      new_note.innerHTML = newPostObject["author"] + "<br /> (Civility Score:" + newPostObject["civ_score"] + ") <br />" + newPostObject["created"] + " <br />" + postText;
 
       $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
-    }
+
+      var padd = document.getElementsByClassName("note_pad")[0];
+      console.log(padd);
+      padd.style.display = 'none';
+
+
+    });
+    // document.getElementById('annotationInput').value=null;
+  }
 
 
 

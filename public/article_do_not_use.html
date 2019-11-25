@@ -20,7 +20,7 @@
     .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;}
-    .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}    
+    .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}
     .blurb:hover {border: solid; border-width: thin;}
 =======
     #note {     background-color: #ced6e0;
@@ -58,7 +58,7 @@
 <<<<<<< HEAD
         /* right: 0; */
         /* height: 30%; */
-        width: "0%"; 
+        width: "0%";
         /* margin-left: -280px; */
 =======
         right: 0;
@@ -96,7 +96,7 @@
 <<<<<<< HEAD
   <div  style="display:none">
  <div class="annote_menu">
-    
+
 =======
   <nav class="navbar navbar-light bg-light">
     <a class="navbar-brand" href="https://electionaries.firebaseapp.com/">
@@ -134,7 +134,7 @@
     </div>
 <<<<<<< HEAD
   </div>
-  
+
   <div id="article">
       <h2 id="art_title"></h2>
       <p id="details"></p>
@@ -287,7 +287,7 @@
                     blurb.innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
                     var note_pad = document.createElement("div");
-                    
+
                     // var annote_menu = document.getElementById("annote_menu");
                     // console.log(annote_menu);
                     note_pad.setAttribute('class','note_pad');
@@ -309,16 +309,16 @@
                         // console.log(note_count);
                     });
 <<<<<<< HEAD
-                
+
                     // blurb.innerHTML += '</br>' + note_pad.children.length;
 
                     blurb.addEventListener("click",blurbClick);
-                   
+
                     article.appendChild(blurb);
                     article.appendChild(note_pad);
                     console.log($("[blurb-num="+doc.data().num+"]").children);
-                    
-                    
+
+
 =======
                     blurb.onclick = function() {
                         console.log("ANYTHING");
@@ -340,27 +340,27 @@
 
 <<<<<<< HEAD
   function blurbClick() {
-      // $(".note_pad").style.display = 'none'; 
+      // $(".note_pad").style.display = 'none';
       var note_panels = document.getElementsByClassName("note_pad");
       console.log(note_panels);
       // note_panels.style.display = 'none';
       for (var i = 0; i < note_panels.length; i++) {
         note_panels[i].style.display = 'none';
         }
-      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]"); 
+      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]");
       console.log(note);
       console.log("the value of this blurb is: "+this.value);
-      note[0].style.display = 'block'; 
+      note[0].style.display = 'block';
       var annote_menu = document.getElementsByClassName("annote_menu");
       console.log(annote_menu);
       note.prepend(annote_menu);
-      console.log(note.find(".annote_menu")); 
+      console.log(note.find(".annote_menu"));
       var article = document.getElementById("article");
       $(".annote_menu").val(this.value);
-      
+
       console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
   };
-  
+
 =======
 
 >>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
@@ -397,7 +397,7 @@
       var new_note = document.createElement("div")
       new_note.setAttribute("class","note");
       new_note.innerHTML = newPostObject["author"] +": <br />"+postText;
-   
+
       $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
     }
 
@@ -410,7 +410,7 @@
   }
 
   function openNav() {
-    
+
     document.getElementById("annote_menu").style.width = "250px";
     document.getElementById("article").style.marginRight = "250px";
     console.log("annote_menu value in openNav: "+document.getElementById("annote_menu").value);
