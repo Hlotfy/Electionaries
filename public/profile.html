@@ -367,12 +367,21 @@
                 var shirley_id = doc.data().id;
                 var shirley_username = doc.data().username;
                 console.log("shirley_id is " + shirley_id);
-                db.collection("followers").doc(followee_hala_username).update({
-                    [shirley_id]: true //2
+                db.collection("followers").doc(followee_hala_username).get().then(function(doc) {
+                  if (!doc.exists) {
+                    db.collection("followers").doc(followee_hala_username).set({
+                      [shirley_id]: true //2
+                    });
+                  } else {
+                    db.collection("followers").doc(followee_hala_username).update({
+                        [shirley_id]: true //2
+                    });
+                  }
                 });
-                db.collection("following").doc(shirley_username).update({
-                    [followee_hala]: true //2
-                });
+                //
+                // db.collection("following").doc(shirley_username).update({
+                //     [followee_hala]: true //2
+                // });
             });
 
         })
