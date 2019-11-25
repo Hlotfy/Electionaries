@@ -76,7 +76,7 @@
   <div class="row">
       <div class="col-9">
         <div id="people-card">
-            <h4>My Profile</h4>
+            <h4>Profile</h4>
               <div class="container">
             <div class="row">
               <div class="col-3">
@@ -246,27 +246,57 @@
                 });
 
             var myAnnotationsDiv = document.getElementById("allUserAnnotations");
-            db.collection("annotations").where ("author", "==", doc.data().username) //where author is the owner of the current profile  - TODO get the actual author
-          .get()
-          .then(function(querySnapshot) {
-              querySnapshot.forEach(function(doc) {
-                  // doc.data() is never undefined for query doc snapshots
-                  console.log("getting annotations db ");
-                  console.log(doc.id, " => ", doc.data());
-                  var br = document.createElement("br");
-                  myAnnotationsDiv.appendChild(document.createTextNode(doc.data().text));
-                  myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild(document.createTextNode("Created at: " + doc.data().created));
-                  myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild(br);
-                  myAnnotationsDiv.appendChild(br);
-              });
-          })
-          .catch(function(error) {
-              console.log("Error getting documents: ", error);
-          });
+            console.log("HELLO");
+
+            db.collection("annotations").where ("author", 'in', [doc.data().username, doc.data().fullName]) //where author is the owner of the current profile  - TODO get the actual author
+
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                  console.log("doc.data().username IS " + doc.data().username);
+                  console.log("doc.data().fullName IS " + doc.data().fullName);
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log("getting annotations db ");
+                    console.log(doc.id, " => ", doc.data());
+                    var div = document.createElement("div");
+                    div.setAttribute("class", "card");
+                    div.setAttribute("style", "background-color: whitesmoke;");
+                      div.setAttribute("style", "padding: 8px;");
+                        // div.setAttribute("style", "margin: 4px;");
+
+                    var txt = document.createElement("h5");
+                    txt.setAttribute("id", "txt");
+                    txt.innerHTML = '"' + doc.data().text + '"<br />';
+
+                    var name= document.createElement("p");
+                    name.setAttribute("id", "nameofpoast");
+                    name.innerHTML = "Created at: " + doc.data().created + " <br />Article: " + doc.data().article + " | Blurb # " + doc.data().blurb;
+                    // name.setAttribute("style", "color: #ff6b81;");
+                    name.setAttribute("style", "font-size: 14px;");
+                    name.setAttribute("style", "font-weight: 300px;");
+                    div.appendChild(txt);
+                    div.appendChild(name);
+                    myAnnotationsDiv.appendChild(div);
+
+
+
+                    //
+                    //
+                    // myAnnotationsDiv.appendChild(document.createTextNode(doc.data().text));
+                    // myAnnotationsDiv.appendChild(br);
+                    // myAnnotationsDiv.appendChild(br);
+                    // myAnnotationsDiv.appendChild(document.createTextNode("Created at: " + doc.data().created));
+                    // myAnnotationsDiv.appendChild(document.createTextNode(doc.data().article));
+                    // myAnnotationsDiv.appendChild(document.createTextNode("| Blurb: " + doc.data().blurb));
+                    // myAnnotationsDiv.appendChild(br);
+                    // myAnnotationsDiv.appendChild(br);
+                    // myAnnotationsDiv.appendChild(br);
+                    // myAnnotationsDiv.appendChild(br);
+                });
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
+            });
 
      try {
        	let app = firebase.app()
@@ -309,6 +339,10 @@
                 var bio = document.getElementById("thefinishedbio");
                 bio.innerHTML = doc.data().bio;
               }
+            } else {
+              console.log("pull bio");
+              var bio = document.getElementById("thefinishedbio");
+              bio.innerHTML = doc.data().bio;
             }
             // db.collection("users").doc(id).update({
             //     bio: bioinput,
