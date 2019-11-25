@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Electionaries: A More Civil Social Network for Thoughtful Political Discussion!</title>
+  <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
+  <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
+  <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <style media="screen">
+    body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    .note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
+    .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
+    #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
+    #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;}
+    .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}    
+    .blurb:hover {border: solid; border-width: thin;}
+    #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
+    #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
+    #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
+    #currentPost {background-color: #c5a6a6; width: 80%; padding: 5px; margin: 3px;}
+    #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
+    #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
+    #conn_list {border: solid; border-width: thin; display:inline-grid; width: 40%; padding: 5px; margin: 3px;position:relative; right: 0px; top:0px;}
+    #conn_list h2 { color:violet; font-weight: bold; }
+    #message { background: white; max-width: 700px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+    #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+    #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+    #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+    #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+    #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+    #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+    #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
+    .annote_menu {
+        background-color: whitesmoke;
+        border: solid;
+        border-width: thin;
+        position: relative;
+        /* top:100px; */
+        /* display: inline-block; */
+        /* right: 0; */
+        /* height: 30%; */
+        width: "0%"; 
+        /* margin-left: -280px; */
+        font-size: 1em;
+        font-weight: 700;
+        overflow: auto;
+        transition: .25s;
+        /* z-index: 50; */
+    }
+    @media (max-width: 600px) {
+      body, #message { margin-top: 0; background: white; box-shadow: none; }
+      body { border-top: 16px solid #ffa100; }
+    }
+    button {  
+      border: none;
+      /* background-color:#ECEFF1; */
+    }
+  </style>
+</head>
+
+<body>
+  <div  style="display:none">
+ <div class="annote_menu">
+    
+      <table id = "annote_input">
+        <tr>
+          <td>
+              <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" id="annotationInput" class="form-control" placeholder="Your annotation" aria-label="Your annotation" aria-describedby="button-addon2">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="input-group-append">
+                    <button id="post-btn" onclick="publishPostToDB()" class="btn btn-primary" type="button" id="button-addon2">Post!</button>
+                </div>
+            </td>
+        </tr>
+       
+    </table>
+    </div>
+  </div>
+  
+  <div id="article">
+      <h2 id="art_title"></h2>
+      <p id="details"></p>
+      <div id="blurbsDiv">
+
+      </div>
+  </div>
+  <p id="load">Firebase SDK Loading&hellip;</p>
+  <script>
+      console.log("hi, we got to article page; getting the article : " + window.location.search.split("=")[1]);
+        var article_id = window.location.search.split("=")[1];
+    // Config Firebase
+    var firebaseConfig = {
+    apiKey: "AIzaSyBhaP1ekvDu6QExupaa04mC9gWV3Tjjxvk",
+    authDomain: "electionaries.firebaseapp.com",
+    databaseURL: "https://electionaries.firebaseio.com",
+    projectId: "electionaries",
+    storageBucket: "electionaries.appspot.com",
+    messagingSenderId: "509982773157",
+    appId: "1:509982773157:web:a775a480db86df3be0224c",
+    measurementId: "G-M6HQRQGYGK"
+    };
+    // Initilaize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    var db = firebase.firestore();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // // The Firebase SDK is initialized and available here!
+      // firebase.auth().onAuthStateChanged(user => { });
+      // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+      // firebase.messaging().requestPermission().then(() => { });
+      // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+      // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+        document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+
+    //Sign in and Out
+    function signIn() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider);
+      // console.log("hi");
+    }
+    function signOut() {
+       firebase.auth().signOut();
+    }
+    function searchUser(){
+        var searchUser = document.getElementById("userSearchInput").value;
+        db.collection("users").where ("fullName", "==", searchUser)
+        .get()
+        .then(function(querySnapshot) {
+              console.log("IF querySnapshot.empty is true, then user is NOT found in DB -> display err msg " + querySnapshot.empty);
+              if (!querySnapshot.empty){ //user IS FOUND --> display link to their profile
+                querySnapshot.forEach(function(doc) {
+                  console.log("querySnapshot.empty is " + querySnapshot.empty);
+                    var userID = doc.data().id;
+                    console.log("that query is ok; querySnapshot.val()/userToGet is: "  + doc.data().fullName);
+                    console.log("endpoint to go to: "  + userID);
+                    //now redirect user to the Profile Page of the searched user
+                    var a = document.createElement('a');
+                    var link = document.createTextNode("Go to the profile page of " + searchUser);
+                    a.appendChild(link);
+                    a.title = ("Go to the profile page of " + searchUser);
+                    a.href = "https://electionaries.firebaseapp.com/profile.html?id="+userID;
+                    var searchResultDiv = document.getElementById("searchResultMessageDiv");
+                    searchResultDiv.appendChild(a);
+                });
+              } else { //user is NOT found in DB -> display err msg //minor TODO add CSS to make error message display flash to indicate each time it's called
+                  console.log("u tried to find" + searchUser + " but that user DNE!");
+                  var errDiv = document.getElementById("searchResultMessageDiv");
+                  errDiv.innerHTML = ("The user you're looking for doesn't exist on our network!");
+              }
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+    }
+
+    //Display news articles using news API
+    var currentNews = document.getElementById("newsArticlesDiv");
+    var url = 'https://content.guardianapis.com/world/2019/nov/12/israel-kills-islamic-jihad-commander-in-gaza-sparking-reprisal-rocket-attacks?show-fields=body&api-key=29ba8134-82bf-40a9-8980-fbc3bde4516b';
+    //'https://newsapi.org/v2/top-headlines?' + 'country=us&' + 'apiKey=392b559ff861492d9f42692a556f6792';
+
+    const options = {
+    url: url,
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8'
+    }
+  };
+  
+  function getArticle(url) {
+  var article;
+  fetch(url)
+    .then(response=> response.json().then(function(response){
+       console.log(response);
+       var text = response['response']['content']['fields']['body'];
+       blurbs = stripHTML(text);
+       for (let i = 0; i < blurbs.length; i++) {
+        if (blurbs[i].trim()!='') {
+          linebreak = document.createElement("br");
+          newBlurb = document.createTextNode(blurbs[i]);
+          currentNews.appendChild(newBlurb);
+          currentNews.appendChild(linebreak);
+        }
+       }
+      return article;
+    }));
+    return article;
+  }
+
+//   getArticle(url);
+
+  function loadArticle(id) {
+      db.collection("articles").doc(id).get().then(function(doc) {
+        console.log(doc.id);
+        var blurbsDiv = document.getElementById("blurbsDiv");
+        var article = document.getElementById("article");
+        // article.setAttribute("id",doc.id);
+        var title = document.getElementById("art_title");
+        title.innerHTML = doc.data().title;
+        var details = document.getElementById("details");
+        details.innerHTML = doc.data().source + '</br> <a href=' + doc.data().link + ">" + doc.data().link + "</a>";
+
+        
+        var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
+        
+        var i = 1;
+            // console.log(article_blurbs.orderBy("num").get());
+            article_blurbs.orderBy("num").get().then(snapshot => {
+                snapshot.forEach(doc => {
+                
+                    var blurb = document.createElement("button")
+                    blurb.setAttribute("class","blurb");
+                    blurb.innerHTML =  doc.data().text+'.' + "<br />";
+                    blurb.setAttribute("value",doc.data().num);
+                    var note_pad = document.createElement("div");
+                    
+                    // var annote_menu = document.getElementById("annote_menu");
+                    // console.log(annote_menu);
+                    note_pad.setAttribute('class','note_pad');
+                    note_pad.setAttribute("blurb-num",doc.data().num);
+                    // note_pad.appendChild(annote_menu);
+                    note_count = 0;
+                    db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
+                    snapshot.forEach(doc => {
+                        var new_note = document.createElement("div");
+                        new_note.setAttribute("class","note");
+                        var txt = document.createElement("h4");
+                        txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
+                        // console.log(doc.data().text);
+                        new_note.appendChild(txt);
+                        note_pad.appendChild(new_note);
+                        note_count++;
+                        // console.log(note_count);
+                        });
+                        // console.log(note_count);
+                    });
+                
+                    // blurb.innerHTML += '</br>' + note_pad.children.length;
+
+                    blurb.addEventListener("click",blurbClick);
+                   
+                    article.appendChild(blurb);
+                    article.appendChild(note_pad);
+                    console.log($("[blurb-num="+doc.data().num+"]").children);
+                    
+                    
+            });
+            });
+
+      });
+  }
+
+  function blurbClick() {
+      // $(".note_pad").style.display = 'none'; 
+      var note_panels = document.getElementsByClassName("note_pad");
+      console.log(note_panels);
+      // note_panels.style.display = 'none';
+      for (var i = 0; i < note_panels.length; i++) {
+        note_panels[i].style.display = 'none';
+        }
+      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]"); 
+      console.log(note);
+      console.log("the value of this blurb is: "+this.value);
+      note[0].style.display = 'block'; 
+      var annote_menu = document.getElementsByClassName("annote_menu");
+      console.log(annote_menu);
+      note.prepend(annote_menu);
+      console.log(note.find(".annote_menu")); 
+      var article = document.getElementById("article");
+      $(".annote_menu").val(this.value);
+      
+      console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
+  };
+  
+
+  function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
+      console.log();
+      var postText = document.getElementById("annotationInput").value;
+      var d = document.createElement('div');
+      d.setAttribute("id", "currentPost");
+      var currentDate = new Date();
+      var newPostObject = {
+        article: article_id,
+        author: "hlotfy", //firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        blurb: parseInt($(".annote_menu").val()),
+        civ_score: 5,
+        created: currentDate, //Date.now(),
+        text: postText
+      };
+      //Display on front end temporarily (since firebase doesnt update front end view in real time :( )
+      d.innerHTML =
+        ('"' + postText + '" <br /><br />By: @' + JSON.stringify(newPostObject["author"])
+        + " <br /> Civility Score: " + JSON.stringify(newPostObject["civ_score"])
+        + " <br /> Created at: "+ JSON.stringify(newPostObject["created"])
+        + " <br /> Link to article: "  + JSON.stringify(newPostObject["article"]) + "<br />" + d.innerHTML);
+      //Add annotation post to database; upon refresh, this new entry will displayed through pull from DB function directly
+      var newAnnotationId = Math.random().toString().substring(2, 10); //firebase.auth().currentUser.displayName.split(' ')[0]+"-"+
+      db.collection("annotations").doc(newAnnotationId).set(newPostObject)
+      .then(function() {
+          console.log("Document successfully written!");
+      })
+      .catch(function(error) {
+          console.error("Error writing document: ", error);
+      });
+      var new_note = document.createElement("div")
+      new_note.setAttribute("class","note");
+      new_note.innerHTML = newPostObject["author"] +": <br />"+postText;
+   
+      $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
+    }
+
+    
+
+  function stripHTML(html){
+    // Create a new div element
+    var parsed = html.replace(/<[^>]+>/g, '').split('\n');
+    return parsed;
+  }
+
+
+
+//////////////// function calls ////////////////
+loadArticle(article_id);
+
+
+  </script>
+ 
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>
