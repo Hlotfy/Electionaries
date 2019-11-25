@@ -12,6 +12,16 @@
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  
+   <!-- Import TensorFlow.js -->
+   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+   <!-- Import tfjs-vis -->
+   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
+   <!-- Import the main script file -->
+
+   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/toxicity"></script>
+
 
   <style media="screen">
   body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
@@ -134,7 +144,7 @@
         <tr>
             <td>
                 <div class="input-group-append">
-                    <button id="post-btn" onclick="publishPostToDB()" class="btn btn-dark btnx" type="button" id="button-addon2">Post!</button>
+                    <button id="post-btn" onclick="" class="btn btn-dark btnx" type="button" id="button-addon2">Post!</button>
                     <button class="btn btn-outline-secondary btnx" onclick="closeNav()">Close</button>
                 </div>
             </td>
@@ -394,7 +404,7 @@
   };
 
 
-  function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
+  function publishPostToDB(civ_score) { //BUG: fix this, to Only enable this function when a user is logged in
     firebase.auth().onAuthStateChanged( function(user){
       console.log();
       var postText = document.getElementById("annotationInput").value;
@@ -405,7 +415,7 @@
         article: article_id,
         author: firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
         blurb: parseInt($(".annote_menu").val()),
-        civ_score: 5,
+        civ_score: civ_score,
         created: currentDate, //Date.now(),
         text: postText
       };
@@ -439,7 +449,60 @@
     // document.getElementById('annotationInput').value=null;
   }
 
+//////////////// tensorflow functions ///////////////
 
+  function run_civility_analysis(text) {
+    
+    // The minimum prediction confidence.
+    const threshold = 0.70;
+    // Load the model. Users optionally pass in a threshold and an array of
+    // labels to include.
+    toxicity.load(threshold).then(model => {
+    model.classify([text]).then(predictions => {
+    
+    // const classes = [];
+    const bad_labels = [];
+    var max_penalty = 0.0;
+    predictions.forEach(function(label) {
+        var civ_val = handle_classes(label);
+        if (civ_val) {
+            if (civ_val > max_penalty) {
+                max_penalty = civ_val;
+            }
+            // classes.push(civ_val);
+            bad_labels.push(label['label']);
+        }
+        
+        });
+        if (!bad_labels.empty) {
+            if(confirm("Hold on! Your annotation has the following uncivil content categories: " 
+                +String(bad_labels)+ " with a civility score of "+String(1.0 - max_penalty) 
+                +". Do you still want to post this?")) {
+                    publishPostToDB(1.0 - max_penalty);
+                } else {
+                    console.log("Toxic post interrupted!");
+                }
+            } else {
+                alert("Your annotation is free of toxic language!");
+            }
+        });
+    })
+};
+function handle_classes(label) {
+    console.log(label['label']);
+    console.log(label['results'][0]['match']);
+    
+    if (label['results'][0]['match']==true) {
+        console.log(label['results'][0]['probabilities'][1])
+        return parseFloat(label['results'][0]['probabilities'][1]);
+    }
+    
+}
+$("#post-btn").on("click", function(event) {
+    // event.preventDefault();
+    var postText = document.getElementById("annotationInput").value;
+    run_civility_analysis(postText);
+})
 
   function stripHTML(html){
     // Create a new div element
