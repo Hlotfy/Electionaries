@@ -38,6 +38,7 @@
     /* #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;} */
     #message p {  font-size: 14px; color:#57606f }
     #usersDiv {display: flex;}
+    /* #userSearchInput {position: relative} */
     /* #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; } */
     /* #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); } */
     #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
@@ -92,7 +93,7 @@
     <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
   </nav>
   <nav class="navbar navbar-light" style="background-color: #f1f2f6;">
-    <div id="userSearchDiv">
+    <div id="userSearchDiv" style="display: inherit;">
       <input type="text" id="userSearchInput" class="form-control" placeholder="Search for a user..." aria-label="Search for a user..." aria-describedby="button-addon2">
       <button id="post-btn" onclick="searchUser()" class="btn btn-secondary" type="button" id="button-addon2">Search</button>
       <div id="searchResultMessageDiv"></div>
