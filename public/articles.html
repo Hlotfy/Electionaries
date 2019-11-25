@@ -14,13 +14,17 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
   <style media="screen">
-    body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-    .note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
-    .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
-    #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
-    #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;}
-    .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}    
-    .blurb:hover {border: solid; border-width: thin;}
+  body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+
+    .note {     background-color: #ced6e0;
+    /* text-align: left; */
+    padding: 8px;
+    margin: 8px;}
+    .note_pad { border-width: thin; background-color:whitesmoke; text-align: left; display:none;}
+    #article {padding: 40px; border-width: thin; margin: 50px; background-color: snow;}
+    /* #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;} */
+    .blurb {padding: 5px; width: 100%;text-align: left; border-left: 6px solid #ccc!important; border-color: #ced6e0!important; background-color: #f1f2f6!important;}
+    .blurb:hover { border-width: thin; border-color: #474787!important; transition: 0.5s; }
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
     #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
@@ -39,14 +43,14 @@
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
     .annote_menu {
         background-color: whitesmoke;
-        border: solid;
+        /* border: solid; */
         border-width: thin;
         position: relative;
         /* top:100px; */
         /* display: inline-block; */
         /* right: 0; */
         /* height: 30%; */
-        width: "0%"; 
+        width: "0%";
         /* margin-left: -280px; */
         font-size: 1em;
         font-weight: 700;
@@ -54,21 +58,40 @@
         transition: .25s;
         /* z-index: 50; */
     }
+    h3 {    font-size: 1.0rem;
+    font-weight: 400;}
+    h4 {    font-size: 0.95rem;
+    font-weight: 350;}
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
     }
-    button {  
+    button {
       border: none;
       /* background-color:#ECEFF1; */
+    }
+    button:focus {outline:0;}
+    body {
+    background: rgb(60,64,192);
+    background: linear-gradient(152deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);
     }
   </style>
 </head>
 
 <body>
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="https://electionaries.firebaseapp.com/">
+    <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
+    Electionaries
+    </a>
+    <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
+    <div id="userNameDisplay"></div>
+    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
+    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
+  </nav>
   <div  style="display:none">
  <div class="annote_menu">
-    
+
       <table id = "annote_input">
         <tr>
           <td>
@@ -87,14 +110,14 @@
                 </div>
             </td>
         </tr>
-       
+
     </table>
     </div>
   </div>
-  
-  <div id="article">
-      <h2 id="art_title"></h2>
-      <p id="details"></p>
+
+  <div id="article" class="card">
+      <h2 id="art_title" ></h2>
+      <p id="details" class="text-primary"></p>
       <div id="blurbsDiv">
 
       </div>
@@ -191,7 +214,7 @@
         'Accept-Charset': 'utf-8'
     }
   };
-  
+
   function getArticle(url) {
   var article;
   fetch(url)
@@ -225,23 +248,24 @@
         var details = document.getElementById("details");
         details.innerHTML = doc.data().source + '</br> <a href=' + doc.data().link + ">" + doc.data().link + "</a>";
 
-        
+
         var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
-        
+
         var i = 1;
             // console.log(article_blurbs.orderBy("num").get());
             article_blurbs.orderBy("num").get().then(snapshot => {
                 snapshot.forEach(doc => {
-                
+
                     var blurb = document.createElement("button")
                     blurb.setAttribute("class","blurb");
-                    blurb.innerHTML =  doc.data().text+'.' + "<br />";
+                    blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
                     var note_pad = document.createElement("div");
-                    
+
                     // var annote_menu = document.getElementById("annote_menu");
                     // console.log(annote_menu);
                     note_pad.setAttribute('class','note_pad');
+                    // note_pad.setAttribute('class','card');
                     note_pad.setAttribute("blurb-num",doc.data().num);
                     // note_pad.appendChild(annote_menu);
                     note_count = 0;
@@ -259,16 +283,16 @@
                         });
                         // console.log(note_count);
                     });
-                
+
                     // blurb.innerHTML += '</br>' + note_pad.children.length;
 
                     blurb.addEventListener("click",blurbClick);
-                   
+
                     article.appendChild(blurb);
                     article.appendChild(note_pad);
                     console.log($("[blurb-num="+doc.data().num+"]").children);
-                    
-                    
+
+
             });
             });
 
@@ -276,27 +300,27 @@
   }
 
   function blurbClick() {
-      // $(".note_pad").style.display = 'none'; 
+      // $(".note_pad").style.display = 'none';
       var note_panels = document.getElementsByClassName("note_pad");
       console.log(note_panels);
       // note_panels.style.display = 'none';
       for (var i = 0; i < note_panels.length; i++) {
         note_panels[i].style.display = 'none';
         }
-      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]"); 
+      var note = $(this).closest("#article").find("[blurb-num="+this.value+"]");
       console.log(note);
       console.log("the value of this blurb is: "+this.value);
-      note[0].style.display = 'block'; 
+      note[0].style.display = 'block';
       var annote_menu = document.getElementsByClassName("annote_menu");
       console.log(annote_menu);
       note.prepend(annote_menu);
-      console.log(note.find(".annote_menu")); 
+      console.log(note.find(".annote_menu"));
       var article = document.getElementById("article");
       $(".annote_menu").val(this.value);
-      
+
       console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
   };
-  
+
 
   function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       console.log();
@@ -330,11 +354,11 @@
       var new_note = document.createElement("div")
       new_note.setAttribute("class","note");
       new_note.innerHTML = newPostObject["author"] +": <br />"+postText;
-   
+
       $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
     }
 
-    
+
 
   function stripHTML(html){
     // Create a new div element
@@ -349,7 +373,7 @@ loadArticle(article_id);
 
 
   </script>
- 
+
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
