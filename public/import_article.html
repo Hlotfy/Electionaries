@@ -154,7 +154,7 @@
     }
     function searchUser(){
         var searchUser = document.getElementById("userSearchInput").value;
-        db.collection("users").where ("fullName", "==", searchUser)
+        db.collection("users").where("fullName", "==", searchUser)
         .get()
         .then(function(querySnapshot) {
               console.log("IF querySnapshot.empty is true, then user is NOT found in DB -> display err msg " + querySnapshot.empty);

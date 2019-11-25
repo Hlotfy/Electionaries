@@ -15,23 +15,12 @@
 
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-<<<<<<< HEAD
     .note { border: solid; border-width: thin; background-color:powderblue; text-align: left;  padding: 3px; margin: 8px;}
     .note_pad { border: solid; border-width: thin; background-color:gainsboro; text-align: left; display:none;}
     #article {padding: 20px;border: solid; border-width: thin; margin: 50px; background-color: snow;}
     #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 24px;}
     .blurb {padding: 0px; width: 100%;text-align: left; font:15px arial, sans-serif;}    
     .blurb:hover {border: solid; border-width: thin;}
-=======
-    #note {     background-color: #ced6e0;
-    /* text-align: left; */
-    padding: 8px;
-    margin: 8px;}
-    #article {padding: 40px; border-width: thin; margin: 50px; background-color: snow;}
-    /* #art_title {color:rgba(0,0,0,0.4); font-weight: bold; font-size: 16px;} */
-    #blurb {padding: 5px; width: 100%;text-align: left; border-left: 6px solid #ccc!important; border-color: #ced6e0!important; background-color: #f1f2f6!important;}
-    #blurb:hover { border-width: thin; border-color: #474787!important; transition: 0.5s; }
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;}
     #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
@@ -50,67 +39,36 @@
     #singlePostDiv {background-color: grey; padding: 5px; margin: 3px;}
     .annote_menu {
         background-color: whitesmoke;
-        /* border: solid; */
+        border: solid;
         border-width: thin;
         position: relative;
         /* top:100px; */
         /* display: inline-block; */
-<<<<<<< HEAD
         /* right: 0; */
         /* height: 30%; */
         width: "0%"; 
         /* margin-left: -280px; */
-=======
-        right: 0;
-        height: 30%;
-        width: 0;
-        margin-left: -280px;
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
         font-size: 1em;
         font-weight: 700;
         overflow: auto;
         transition: .25s;
         /* z-index: 50; */
     }
-    h3 {    font-size: 1.0rem;
-    font-weight: 400;}
-    h4 {    font-size: 0.95rem;
-    font-weight: 350;}
     @media (max-width: 600px) {
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
     }
-    button {
+    button {  
       border: none;
       /* background-color:#ECEFF1; */
-    }
-    button:focus {outline:0;}
-    body {
-    background: rgb(60,64,192);
-    background: linear-gradient(152deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);
     }
   </style>
 </head>
 
 <body>
-<<<<<<< HEAD
   <div  style="display:none">
  <div class="annote_menu">
     
-=======
-  <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="https://electionaries.firebaseapp.com/">
-    <img src="logo.png" width="30" height="30" class="d-inline-block align-top" alt=""></img>
-    Electionaries
-    </a>
-    <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
-    <div id="userNameDisplay"></div>
-    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
-    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
-  </nav>
- <div id="annote_menu" class="card">
-
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
       <table id = "annote_input">
         <tr>
           <td>
@@ -129,21 +87,14 @@
                 </div>
             </td>
         </tr>
-
+       
     </table>
     </div>
-<<<<<<< HEAD
   </div>
   
   <div id="article">
       <h2 id="art_title"></h2>
       <p id="details"></p>
-=======
-
-  <div id="article" class="card">
-      <h2 id="art_title" ></h2>
-      <p id="details" class="text-primary"></p>
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
       <div id="blurbsDiv">
 
       </div>
@@ -240,7 +191,7 @@
         'Accept-Charset': 'utf-8'
     }
   };
-
+  
   function getArticle(url) {
   var article;
   fetch(url)
@@ -274,14 +225,14 @@
         var details = document.getElementById("details");
         details.innerHTML = doc.data().source + '</br> <a href=' + doc.data().link + ">" + doc.data().link + "</a>";
 
-
+        
         var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
-
+        
         var i = 1;
             // console.log(article_blurbs.orderBy("num").get());
             article_blurbs.orderBy("num").get().then(snapshot => {
                 snapshot.forEach(doc => {
-
+                
                     var blurb = document.createElement("button")
                     blurb.setAttribute("class","blurb");
                     blurb.innerHTML =  doc.data().text+'.' + "<br />";
@@ -308,7 +259,6 @@
                         });
                         // console.log(note_count);
                     });
-<<<<<<< HEAD
                 
                     // blurb.innerHTML += '</br>' + note_pad.children.length;
 
@@ -319,26 +269,12 @@
                     console.log($("[blurb-num="+doc.data().num+"]").children);
                     
                     
-=======
-                    blurb.onclick = function() {
-                        console.log("ANYTHING");
-                        var note = $(this).find("#note");
-                        note.toggle();
-                        openNav(); //.slideToggle();
-                        $("#annote_menu").val(doc.data().num);
-                        console.log($("#annote_menu").val());
-                    };
-                    article.appendChild(blurb);
-
-
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
             });
             });
 
       });
   }
 
-<<<<<<< HEAD
   function blurbClick() {
       // $(".note_pad").style.display = 'none'; 
       var note_panels = document.getElementsByClassName("note_pad");
@@ -361,9 +297,6 @@
       console.log("the value of the annote_menu is now: "+$(".annote_menu").val());
   };
   
-=======
-
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
 
   function publishPostToDB() { //BUG: fix this, to Only enable this function when a user is logged in
       console.log();
@@ -401,7 +334,7 @@
       $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0].appendChild(new_note);
     }
 
-
+    
 
   function stripHTML(html){
     // Create a new div element
@@ -409,120 +342,14 @@
     return parsed;
   }
 
-  function openNav() {
-    
-    document.getElementById("annote_menu").style.width = "250px";
-    document.getElementById("article").style.marginRight = "250px";
-    console.log("annote_menu value in openNav: "+document.getElementById("annote_menu").value);
-  }
 
-/* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-  function closeNav() {
-    document.getElementById("annote_menu").style.width = "0";
-    document.getElementById("article").style.marginRight = "50px";
-  }
 
-<<<<<<< HEAD
-=======
-
-    // fetch(url)
-    // .then(response=> response.json().then(function(response){
-
-    //    var allNewsArticlesFromApi = document.createElement('div');
-    //    console.log(response);
-    //    var newArticle = {
-    //     "added_by": "hlotfy",
-    //     "link": response['response']['content']['webUrl'],
-    //     "source": "Guardian",
-    //     "title": response['response']['content']['webTitle'],
-    //     "added_on": new Date(),
-    //    };
-    //    var text = response['response']['content']['fields']['body'];
-    //    var blurbs = stripHTML(text);
-    //    var artId = "guardian_"+Math.random().toString().substring(2, 5);
-    //    db.collection("articles").doc(artId).set(newArticle);
-    //    console.log("blurb list: "+blurbs);
-    //    var cleanBlurbs = blurbs.filter(function(value, index, arr){
-    //       return value.trim().replace(' ','')!='';
-    //    });
-    //    console.log("blurb list: "+cleanBlurbs);
-    //    for (let i = 0; i < cleanBlurbs.length; i++) {
-    //     // if (blurbs[i].trim().replace(' ','')!='') {
-    //         var blurbText = {"text": cleanBlurbs[i]};
-    //         db.collection("articles").doc(artId).collection('blurbs').doc(String(i+1)).set(blurbText)
-    //         .then(function() {
-    //             console.log("Document successfully written!");
-    //         })
-    //         .catch(function(error) {
-    //             console.error("Error writing document: ", error);
-    //         });
-    //       linebreak = document.createElement("br");
-    //       newBlurb = document.createTextNode(cleanBlurbs[i]);
-    //       allNewsArticlesFromApi.appendChild(newBlurb);
-    //       allNewsArticlesFromApi.appendChild(linebreak);
-    //     // }
-    //    }
-    //   }));
-
-    //Print multiple blurbs
-    // var blurbsDiv = document.getElementById("blurbsDiv");
-    // var article_id = document.getElementById("article");
-    // db.collection("articles").get().then(snapshot => {
-    //   snapshot.forEach(doc => {
-    //     var art_id = doc.id;
-    //     var annotes = db.collection("annotations").where('article','==',doc.id).get().then(snapshot => {
-    //       snapshot.forEach(doc => {
-    //         console.log(doc.data());
-    //       })
-    //     });
-
-        // var art = document.createElement("div");
-        // var art_title = document.createElement("h2");
-        // art_title.setAttribute("id","art_title");
-        // var art_text = document.createElement("div");
-        // art_title.innerHTML = doc.data().title;
-        // art.appendChild(art_title);
-
-//         db.collection("articles/"+doc.id+"/blurbs").get().then(snapshot => {
-
-//           snapshot.forEach(doc => {
-//             var blurb = document.createElement("div")
-//             blurb.setAttribute("id","blurb");
-//             blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text + "<br />";
-
-//                 db.collection("annotations").where('article','==',art_id).where('blurb','==', parseInt(doc.id)).get().then(snapshot => {
-//                   snapshot.forEach(doc => {
-//                     console.log(doc.data());
-
-//                     var new_note = document.createElement("div");
-//                     new_note.setAttribute("id","note");
-//                     var txt = document.createElement("h4");
-//                     txt.innerHTML = doc.data().author +": <br />"+doc.data().text;
-//                     console.log(doc.data().text);
-//                     new_note.appendChild(txt);
-//                     blurb.appendChild(new_note);
-//                   })
-//                   })
-//                 art_text.appendChild(blurb);
-
-//           // }
-//           })
-//           // art_text.innerHTML += "<hr> <hr>";
-//         })
-//         art.appendChild(art_text);
-//         blurbsDiv.appendChild(art);
-//         // blurbsDiv.appendChild(document.createElement("<hr>"));
-//     })
-
-//   });
-
->>>>>>> d3817e6b26650f7d34f3038da14a3af853f91ebc
 //////////////// function calls ////////////////
 loadArticle(article_id);
 
 
   </script>
-
+ 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
