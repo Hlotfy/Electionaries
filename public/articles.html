@@ -12,7 +12,7 @@
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  
+
    <!-- Import TensorFlow.js -->
    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
    <!-- Import tfjs-vis -->
@@ -452,14 +452,14 @@
 //////////////// tensorflow functions ///////////////
 
   function run_civility_analysis(text) {
-    
+
     // The minimum prediction confidence.
     const threshold = 0.70;
     // Load the model. Users optionally pass in a threshold and an array of
     // labels to include.
     toxicity.load(threshold).then(model => {
     model.classify([text]).then(predictions => {
-    
+
     // const classes = [];
     const bad_labels = [];
     var max_penalty = 0.0;
@@ -472,12 +472,12 @@
             // classes.push(civ_val);
             bad_labels.push(label['label']);
         }
-        
+
         });
         if (!bad_labels.empty) {
-            if(confirm("Hold on! Your annotation has the following uncivil content categories: " 
-                +String(bad_labels)+ " with a civility score of "+String(1.0 - max_penalty) 
-                +". Do you still want to post this?")) {
+            if(confirm("Quick annotation civility check!\n\nYour annotation has the following uncivil content categories: \n"
+                +String(bad_labels)+ "\n\nThis annotation would update your Civility Score to "+String(1.0 - max_penalty)
+                +" out of 1.\nWould you still like to post your annotation?")) {
                     publishPostToDB(1.0 - max_penalty);
                 } else {
                     console.log("Toxic post interrupted!");
@@ -491,12 +491,12 @@
 function handle_classes(label) {
     console.log(label['label']);
     console.log(label['results'][0]['match']);
-    
+
     if (label['results'][0]['match']==true) {
         console.log(label['results'][0]['probabilities'][1])
         return parseFloat(label['results'][0]['probabilities'][1]);
     }
-    
+
 }
 $("#post-btn").on("click", function(event) {
     // event.preventDefault();
