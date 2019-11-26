@@ -145,7 +145,7 @@
             <td>
                 <div class="input-group-append">
                     <button id="post-btn" onclick="" class="btn btn-dark btnx" type="button" id="button-addon2">Post!</button>
-                    <button class="btn btn-outline-secondary btnx" onclick="closeNav()">Close</button>
+                    <button id="close-btn" class="btn btn-outline-secondary btnx" onclick="">Close</button>
                 </div>
             </td>
         </tr>
@@ -279,9 +279,15 @@
   }
 
 //   getArticle(url);
+$("#close-btn").on("click", function(event) {
+    // console.log($("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0]);
+    var padd = $("[blurb-num="+parseInt($(".annote_menu").val())+"]")[0];
+    console.log(padd);
+    padd.style.display = 'none';
+});
   function closeNav() {
     console.log("CALLED CLOS NAV");
-    var padd = document.getElementsByClassName("note_pad")[0];
+    var padd = $(this); //.closest(".blurb").find(".note_pad");
     console.log(padd);
     padd.style.display = 'none';
   }
@@ -306,6 +312,7 @@
                 snapshot.forEach(doc => {
 
                     var blurb = document.createElement("button");
+                    var counter = document.createElement("p");
                     blurb.setAttribute("class","blurb");
                     blurb.appendChild(document.createElement("h3")).innerHTML =  doc.data().text+'.' + "<br />";
                     blurb.setAttribute("value",doc.data().num);
@@ -320,6 +327,13 @@
                     // note_pad.appendChild(annote_menu);
                     note_count = 0;
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
+                        console.log("Here is the snapshot: ");
+                        console.log(snapshot['docs'].length);
+                        if (snapshot['docs'].length > 0) {
+                            var counter = document.createTextNode("This blurb has "+snapshot['docs'].length +" annotations.");
+                            blurb.appendChild(counter);
+                            
+                        }
                     snapshot.forEach(doc => {
                         var new_note = document.createElement("div");
                         new_note.setAttribute("class","note");
@@ -406,25 +420,41 @@
 
   function publishPostToDB(civ_score) { //BUG: fix this, to Only enable this function when a user is logged in
     firebase.auth().onAuthStateChanged( function(user){
-      console.log();
+      console.log(civ_score);
       var postText = document.getElementById("annotationInput").value;
       var d = document.createElement('div');
       d.setAttribute("id", "currentPost");
       var currentDate = new Date();
       var newPostObject = {
         article: article_id,
-        author: firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        author: "hlotfy", //firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
         blurb: parseInt($(".annote_menu").val()),
         civ_score: civ_score,
         created: currentDate, //Date.now(),
         text: postText
       };
+
+    //   var currUserDoc = db.collection("users").where('fullName', '==', firebase.auth().currentUser.displayName).doc();
+      
+    db.collection("users").where('fullName', '==', 'Hala Lotfy').get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          console.log(doc.data());
+          var newAnnoCount = parseInt(doc.data().annotes)+1;
+          var newCivScore = parseFloat(((parseFloat(doc.data().civ_score) + civ_score)/newAnnoCount).toFixed(2))
+          db.collection("users").doc(doc.id).update({
+                annotes: newAnnoCount,
+                civ_score: newCivScore
+            });
+        });
+      });
+      
       //Display on front end temporarily (since firebase doesnt update front end view in real time :( )
       d.innerHTML =
         ('"' + postText + '" <br /><br />By: @' + JSON.stringify(newPostObject["author"])
         + " <br /> Civility Score: " + JSON.stringify(newPostObject["civ_score"])
         + " <br /> Created at: "+ JSON.stringify(newPostObject["created"])
         + " <br /> Link to article: "  + JSON.stringify(newPostObject["article"]) + "<br />" + d.innerHTML);
+
       //Add annotation post to database; upon refresh, this new entry will displayed through pull from DB function directly
       var newAnnotationId = Math.random().toString().substring(2, 10); //firebase.auth().currentUser.displayName.split(' ')[0]+"-"+
       db.collection("annotations").doc(newAnnotationId).set(newPostObject)
