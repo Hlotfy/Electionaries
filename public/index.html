@@ -27,7 +27,7 @@
     #blurb:hover {border: solid; border-width: thin; background-color: lightsteelblue;}
     #composeDiv {background-color: #ced6e0; width: 80%; padding: 20px; margin: 3px;}
     #profile {background-color: #f1f2f6; width: 60%; padding: 20px; margin: 10px;min-width: 100px;}
-    #feed {background-color: #ffb8b8; width: 80%; padding: 10px; margin: 3px;}
+    #feed {padding: 10px; margin: 10px; background-color: #f1f2f6}
     #currentPost {background-color: #ffcccc; width: 80%; padding: 5px; margin: 3px;}
     #profile_body {border: solid; border-width: thin; background-color: rgb(242, 248, 248); padding: 5px; margin: 3px; position:relative;}
     #connections { background-color: lightcyan; padding: 5px; margin: 3px; }
@@ -36,7 +36,7 @@
     #message { background: white; margin: 10px; padding: 32px 24px; border-radius: 3px; }
     /* #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; } */
     /* #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;} */
-    #message p {  font-size: 14px; color:#57606f }
+    /* #message p {  font-size: 14px; color:#57606f } */
     #searchResultMessageDiv {    padding-left: 10px;
     line-height: 99%;}
     #usersDiv {display: flex;}
@@ -49,6 +49,25 @@
     /* @media (max-width: 600px) { */
       body, #message { margin-top: 0; background: white; box-shadow: none; }
       body { border-top: 16px solid #ffa100; }
+    }
+    #sml {font-size: 0.75rem;
+    font-weight: 400;
+    color: grey;
+    margin-bottom: 3px;
+    }
+    #sml1 {font-size: 0.9rem;
+    font-weight: 500;
+    color: #222f3e;
+    /* font-style: italic; */
+    /* text-decoration: underline; */
+    /* margin-top: 3px; */
+    }
+    #hi {color: grey}
+    #nameofpoast{    font-size: 20px;
+    font-weight: 500;
+    margin-top: 6px;
+    margin-bottom: 3px;
+    color: black;
     }
     .gotoproflink {
       font-size: 15px;
@@ -133,8 +152,9 @@
         </div>
       </div>
       <div id="tempFeedDiv"></div>
-      <div id="feedDiv"></div>
+
     </div>
+
 
     <div class="hidden">
       <h1 id="feedDivTitle">News articles (populated real time from news API currently in Console.log; next iteration will make these articles appear on front end, and interactive with posts/annotations)</h2>
@@ -159,6 +179,9 @@
     <h2 id="userDivTitle">Annotator Network</h2>
     <h5 id="usersDiv"></h5>
     <hr>
+    <!-- <h6 id="hi" >What people are discussing right now...</h6> -->
+    <h2 id="userDivTitle" >Current News Discourse</h2>
+    <div id="feedDiv" ></div>
     <h1 id="annotationsDivTitle" class="hidden">5 User-Generated Annotations (Posts) Printed Below:</h2>
     <h5 id="annotationsDiv"></h5>
 
@@ -427,14 +450,64 @@
       snapshot.forEach(doc => {
         var feed_block = document.createElement("div");
         feed_block.setAttribute("id","feed");
-        feed_block.innerHTML += '"' + doc.data().text
-          + '" <br /><br />By: @' +doc.data().author
-          + "<br /> Civility Score: " + doc.data().civ_score
-          + " <br />Created at: "+ doc.data().created
-          + " <br />Link to article: " + doc.data().article + " <br />";
-        activityFeed.appendChild(feed_block);
+        feed_block.setAttribute("class","card");
+
+
+        var post= document.createElement("p");
+        post.setAttribute("id", "nameofpoast");
+        post.innerHTML = '"' + doc.data().text + '"';
+
+        var txt = document.createElement("p");
+        txt.setAttribute("id", "sml");
+        // newPostObject["author"] + "<br /> (Civility Score:" + newPostObject["civ_score"] + ") <br />" + newPostObject["created"] + " <br />" + postText;
+        txt.innerHTML = "Civility Score:"+doc.data().civ_score + "<br />" + doc.data().created + " <br />"
+
+        feed_block.appendChild(post);
+        feed_block.innerHTML += "@" +doc.data().author
+        feed_block.appendChild(txt);
+
+
+
+        db.collection("articles").get().then(snapshot => {
+        db.collection("articles").doc(doc.data().article)
+          .get()
+          .then(function(doc) {
+            console.log(doc.id, " => ", doc.data());
+            console.log(doc.data().link);
+            // querySnapshot.forEach(function(doc) {
+            // console.log("DOC.ID: " +  doc.id);
+            // console.log(doc.data());
+            // console.log("Link is" + doc.data().link);
+            // newPostObject["author"] + "<br /> (Civility Score:" + newPostObject["civ_score"] + ") <br />" + newPostObject["created"] + " <br />" + postText;
+            var txt1 = document.createElement("p");
+            txt1.setAttribute("id", "sml1");
+            txt1.innerHTML = "(Article: " + doc.data().title + ")";
+            feed_block.appendChild(txt1);
+        })
       })
-    });
+      var a = document.createElement('a');
+      var link = document.createTextNode("Go to article");
+      a.appendChild(link);
+      a.title = ("Go to article");
+      a.href = "https://electionaries.firebaseapp.com/articles.html?id=" +doc.data().article;
+
+          // var txt1 = document.createElement('a');
+          //
+          // // txt1.setAttribute("id", "sml1");
+          // txt1.innerHTML = "https://electionaries.firebaseapp.com/articles.html?id=" +doc.data().article;
+
+      // var article_id = doc.data().article;
+      console.log("article_id is" + doc.data().article);
+
+            feed_block.appendChild(a);
+
+            activityFeed.appendChild(feed_block);
+        //   // })
+      });
+
+
+      });
+    // });
 
 
     //Display news articles using news API
