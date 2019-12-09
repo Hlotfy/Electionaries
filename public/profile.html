@@ -11,12 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/7.2.2/firebase-analytics.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-auth.js"></script>
   <script  src="https://www.gstatic.com/firebasejs/7.2.2/firebase-firestore.js"></script>
-  <!-- <script src="/__/firebase/init.js"></script> -->
-  <!-- <script  src="/__/firebase/7.1.0/firebase-database.js"></script>
-  <script  src="/__/firebase/7.1.0/firebase-messaging.js"></script>
-  <script  src="/__/firebase/7.1.0/firebase-storage.js"></script> -->
-  <!-- initialize the SDK after all desired features are loaded -->
-  <!-- <script  src="/__/firebase/init.js"></script> -->
+ 
   <style media="screen">
     body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
     #note { border: solid; border-width: thin; background-color:powderblue; text-align: left; display: inline-block; visibility:visible; padding: 3px; margin: 8px;}
@@ -39,10 +34,7 @@
     #followInfo {background-color: #f1f2f6;}
     #grey {color: #8395a7;}
     h6 {color: #1e272e;}
-    /* #followInfo {background:rgb(60,64,192); background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
-      /* background: linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
-    /* background {rgb(60,64,192);}
-    background {linear-gradient(90deg, rgba(60,64,192,1) 0%, rgba(52,31,151,1) 35%, rgba(239,87,112,1) 100%);} */
+   
     .space{margin: 10px 0px;}
     .picDisplay {
       /* display: inline-block; */
@@ -66,8 +58,7 @@
     </a>
     <span class="navbar-text">The social network for fact-based civil political discussion ©</span>
     <div id="userNameDisplay">
-    <!-- <button id="sign-in" class="btn btn-primary" onclick="signIn()" >Sign-In</button>
-    <button id="sign-out" class="btn btn-outline-secondary" onclick="signOut()" >Sign-Out</button> -->
+   
   </nav>
 
 
@@ -100,15 +91,7 @@
           <h4>About Me</h4>
 
           <div id="theform">
-                  <!-- <div class="form-group">
-                                      <label id="grey">Help fellow annotators get to know you!</label>
-                                      <textarea id="userbioinput" class="form-control" rows="5" placeholder="My Bio"></textarea>
-                  </div>
-                  <div class="row">
-                      <div class="col d-flex justify-content-end">
-                        <button onclick="saveBioChanges()" class="btn btn-block btn-secondary" type="submit">Save Changes</button>
-                      </div>
-                    </div> -->
+                 
           </div>
           <div id="thefinishedbio"></div>
         <hr>
@@ -179,7 +162,7 @@
               propic.appendChild(profile_img);
              document.getElementById("name").innerHTML = doc.data().fullName;
              document.getElementById("userHandle").innerHTML = doc.data().username;
-             document.getElementById("civ_score").innerHTML = doc.data().civ_score;
+             document.getElementById("civ_score").innerHTML = doc.data().civ_score + "/1";
 
             var following = document.getElementById("following_list");
             // var a = document.createElement('a');
@@ -190,23 +173,18 @@
                     console.log(field);
                     var a = document.createElement('a');
                     a.setAttribute("id",field+"_flwing");
-                    // var linkText = document.createTextNode(field);
-                    // a.appendChild(linkText);
+
                     console.log(typeof(field));
                     following.appendChild(a);
                     following.appendChild(document.createElement("br"));
-                    db.collection("users").doc(field).get().then(function(doc) { //) {
-                      // querySnapshot.forEach(function(doc) {
-                            // if (doc.data().username === field) {
+                    db.collection("users").doc(field).get().then(function(doc) { 
+
                                 var cora = document.getElementById(doc.data().id+"_flwing");
                                 console.log(doc.data());
                                 cora.href = "profile.html?id="+doc.id;
                                 var linkText = document.createTextNode(doc.data().username);
                                 cora.appendChild(linkText);
-                                // console.log(a.href);
 
-                            // }
-                          // });
                         });
                       }
                       }
@@ -278,20 +256,6 @@
                     div.appendChild(name);
                     myAnnotationsDiv.appendChild(div);
 
-
-
-                    //
-                    //
-                    // myAnnotationsDiv.appendChild(document.createTextNode(doc.data().text));
-                    // myAnnotationsDiv.appendChild(br);
-                    // myAnnotationsDiv.appendChild(br);
-                    // myAnnotationsDiv.appendChild(document.createTextNode("Created at: " + doc.data().created));
-                    // myAnnotationsDiv.appendChild(document.createTextNode(doc.data().article));
-                    // myAnnotationsDiv.appendChild(document.createTextNode("| Blurb: " + doc.data().blurb));
-                    // myAnnotationsDiv.appendChild(br);
-                    // myAnnotationsDiv.appendChild(br);
-                    // myAnnotationsDiv.appendChild(br);
-                    // myAnnotationsDiv.appendChild(br);
                 });
             })
             .catch(function(error) {
@@ -344,9 +308,7 @@
               var bio = document.getElementById("thefinishedbio");
               bio.innerHTML = doc.data().bio;
             }
-            // db.collection("users").doc(id).update({
-            //     bio: bioinput,
-            // });
+            
           });
       });
       });

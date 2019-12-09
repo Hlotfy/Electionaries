@@ -307,7 +307,6 @@ $("#close-btn").on("click", function(event) {
         var article_blurbs = db.collection("articles/"+doc.id+"/blurbs");
 
         var i = 1;
-            // console.log(article_blurbs.orderBy("num").get());
             article_blurbs.orderBy("num").get().then(snapshot => {
                 snapshot.forEach(doc => {
 
@@ -318,13 +317,9 @@ $("#close-btn").on("click", function(event) {
                     blurb.setAttribute("value",doc.data().num);
                     var note_pad = document.createElement("div");
 
-                    // var annote_menu = document.getElementById("annote_menu");
-                    // console.log(annote_menu);
                     note_pad.setAttribute('class','note_pad');
                     note_pad.setAttribute('id','notepad');
-                    // note_pad.setAttribute('class','card');
                     note_pad.setAttribute("blurb-num",doc.data().num);
-                    // note_pad.appendChild(annote_menu);
                     note_count = 0;
                     db.collection("annotations").where('article','==',id).where('blurb','==', doc.data().num).get().then(snapshot => {
                         console.log("Here is the snapshot: ");
@@ -342,37 +337,22 @@ $("#close-btn").on("click", function(event) {
                         name.innerHTML = doc.data().author +"<br /> "
                         name.setAttribute("id", "actualpost");
 
-                        // var db_date = doc.data().created;
-                        // // Hours part from the timestamp
-                        // var hours = db_date.getHours();
-                        // // Minutes part from the timestamp
-                        // var minutes = "0" + db_date.getMinutes();
-                        // // Seconds part from the timestamp
-                        // var seconds = "0" + db_date.getSeconds();
-                        //
-                        // // Will display time in 10:30:23 format
-                        // var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-
                         var txt = document.createElement("p");
                         txt.setAttribute("id", "tsml");
-                        // newPostObject["author"] + "<br /> (Civility Score:" + newPostObject["civ_score"] + ") <br />" + newPostObject["created"] + " <br />" + postText;
                         txt.innerHTML = "Civility Score:"+doc.data().civ_score + "<br />" + doc.data().created + " <br />"
 
                         var post= document.createElement("p");
                         post.setAttribute("id", "nameofpoast");
                         post.innerHTML = doc.data().text;
-                        // console.log(doc.data().text);
                         new_note.appendChild(name);
                         new_note.appendChild(txt);
                         new_note.appendChild(post);
                         note_pad.appendChild(new_note);
                         note_count++;
-                        // console.log(note_count);
-                        });
-                        // console.log(note_count);
-                    });
 
-                    // blurb.innerHTML += '</br>' + note_pad.children.length;
+                        });
+
+                    });
 
                     blurb.addEventListener("click",blurbClick);
 
@@ -396,10 +376,8 @@ $("#close-btn").on("click", function(event) {
     var padd = document.getElementsByClassName("note_pad")[0];
     console.log(padd);
     padd.style.display = 'block';
-      // $(".note_pad").style.display = 'none';
       var note_panels = document.getElementsByClassName("note_pad");
       console.log(note_panels);
-      // note_panels.style.display = 'none';
       for (var i = 0; i < note_panels.length; i++) {
         note_panels[i].style.display = 'none';
         }
@@ -427,16 +405,14 @@ $("#close-btn").on("click", function(event) {
       var currentDate = new Date();
       var newPostObject = {
         article: article_id,
-        author: "hlotfy", //firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
+        author: firebase.auth().currentUser.displayName, //document.getElementById("authorInput").value,
         blurb: parseInt($(".annote_menu").val()),
         civ_score: civ_score,
         created: currentDate, //Date.now(),
         text: postText
       };
-
-    //   var currUserDoc = db.collection("users").where('fullName', '==', firebase.auth().currentUser.displayName).doc();
       
-    db.collection("users").where('fullName', '==', 'Hala Lotfy').get().then(function(querySnapshot) {
+    db.collection("users").where('fullName', '==', firebase.auth().currentUser.displayName).get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
           console.log(doc.data());
           var newAnnoCount = parseInt(doc.data().annotes)+1;
@@ -476,7 +452,6 @@ $("#close-btn").on("click", function(event) {
 
 
     });
-    // document.getElementById('annotationInput').value=null;
   }
 
 //////////////// tensorflow functions ///////////////
@@ -484,36 +459,39 @@ $("#close-btn").on("click", function(event) {
   function run_civility_analysis(text) {
 
     // The minimum prediction confidence.
-    const threshold = 0.70;
+    const threshold = 0.60;
     // Load the model. Users optionally pass in a threshold and an array of
     // labels to include.
     toxicity.load(threshold).then(model => {
     model.classify([text]).then(predictions => {
 
-    // const classes = [];
     const bad_labels = [];
-    var max_penalty = 0.0;
+    var avg_penalty = 0.0;
+    var uncivil = false;
+    var civ_val = 0;
     predictions.forEach(function(label) {
-        var civ_val = handle_classes(label);
-        if (civ_val) {
-            if (civ_val > max_penalty) {
-                max_penalty = civ_val;
-            }
-            // classes.push(civ_val);
-            bad_labels.push(label['label']);
+        var match_score = handle_classes(label);
+        civ_val += match_score;
+        if (match_score>0) {
+          uncivil = true;
+          bad_labels.push(label['label']);
         }
 
         });
-        if (!bad_labels.empty) {
-            if(confirm("Quick annotation civility check!\n\nYour annotation has the following uncivil content categories: \n"
-                +String(bad_labels)+ "\n\nThis annotation would update your Civility Score to "+String(1.0 - max_penalty)
-                +" out of 1.\nWould you still like to post your annotation?")) {
-                    publishPostToDB(1.0 - max_penalty);
+        console.log(civ_val);
+        avg_penalty = civ_val/7;
+        console.log(avg_penalty);
+        if (uncivil) {
+            if(confirm("This annotation has a civility score of "+String(1.0 - avg_penalty)
+            +"out of 1.\nThe text was flagged as containing the following uncivil content: "+String(bad_labels)+ "\n"
+                +"Publishing annotations with uncivil language may lead to a distrustful, hostile environment which is not conducive to discussion. You can select cancel below to modify your post. If you proceed with the post as is, your user civility score may be negatively impacted. Would you still like to post this annotation?\n")) {
+                    publishPostToDB(1.0 - avg_penalty);
                 } else {
                     console.log("Toxic post interrupted!");
                 }
             } else {
-                alert("Your annotation is free of toxic language!");
+                alert("This annotation has a civility score of "+String(1.0 - avg_penalty)+" out of 1"+"\nYour annotation is free of toxic language!");
+                publishPostToDB(1.0);
             }
         });
     })
@@ -523,13 +501,14 @@ function handle_classes(label) {
     console.log(label['results'][0]['match']);
 
     if (label['results'][0]['match']==true) {
-        console.log(label['results'][0]['probabilities'][1])
-        return parseFloat(label['results'][0]['probabilities'][1]);
+      console.log(label['results'][0]['probabilities'][1])
+      return parseFloat(label['results'][0]['probabilities'][1]);
+    } else {
+      return 0;
     }
 
 }
 $("#post-btn").on("click", function(event) {
-    // event.preventDefault();
     var postText = document.getElementById("annotationInput").value;
     run_civility_analysis(postText);
 })
@@ -540,7 +519,9 @@ $("#post-btn").on("click", function(event) {
     return parsed;
   }
 
+  function getUserByUsername(user) {
 
+  }
 
 //////////////// function calls ////////////////
 loadArticle(article_id);

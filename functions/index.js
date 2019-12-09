@@ -15,46 +15,17 @@ exports.setupUsers = functions.auth.user().onCreate(async (user) => {
   var fullName = user.displayName || 'Anonymous';
   await admin.firestore().collection('users').doc(user.uid).set({//changing back to access profile link easily
   //await admin.firestore().collection('users').doc((user.email).split("@")[0]).set({
+    annotes: 0,
     fullName: fullName,
     username: (user.email).split("@")[0],
     email: user.email,
-    civ_score: 5,
+    civ_score: 1.0,
     propic: user.photoURL,
     id: user.uid
     // ,
     // bio: ""
   });
 });
-
-// exports.database.https.onRequest(async (req, res) => {
-//   // Grab the text parameter.
-//   const original = req.query.text;
-//   // Push the new message into the Realtime Database using the Firebase Admin SDK.
-//   const snapshot = await admin.database().ref('/messages').push({original: original});
-//   // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
-//   res.redirect(303, snapshot.ref.toString());
-// });
-
-// function getArticle(url) {
-//   var article;
-//   fetch(url)
-//     .then(response=> response.json().then(function(response){
-//        console.log(response);
-//        var text = response['response']['content']['fields']['body'];
-//        article = stripHTML(text);
-//       //  for (let i = 0; i < blurbs.length; i++) {
-//       //   if (blurbs[i].trim()!='') {
-//       //     linebreak = document.createElement("br");
-//       //     newBlurb = document.createTextNode(blurbs[i]);
-//       //     allNewsArticlesFromApi.appendChild(newBlurb);
-//       //     allNewsArticlesFromApi.appendChild(linebreak);
-//       //   }
-//       //  }
-//       return article;
-//     }));
-//     return article;
-//   }
-
 
 function stripHTML(html){
   // Create a new div element

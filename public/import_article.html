@@ -226,7 +226,7 @@ function getArticle() {
         // var art_text = document.createElement("div");
         // art_title.innerHTML = doc.data().title;
         art_link.innerHTML = response['response']['content']['webTitle']; //.appendChild(art_title);
-        art_link.href = "article.html?id="+real_id;
+        art_link.href = "articles.html?id="+real_id;
         var display_link = document.getElementById("new_article_link");
         display_link.appendChild(art_link);
       }));
